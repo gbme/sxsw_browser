@@ -7,8 +7,9 @@ Requirements:
 * [Vagrant installed](https://www.vagrantup.com/downloads.html)
 * [Ansible installed](http://docs.ansible.com/ansible/intro_installation.html#installation)
 
-`vagrant up`
+### Init and provision vagrant box
 
+`vagrant up`
 
 ### Fill searchdatabase width SXSW schedule
 `vagrant ssh`
