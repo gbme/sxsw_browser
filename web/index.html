@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>ElasticUI Demo</title>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
+    <script src="lib/elasticsearch.angular.js"></script>
+    <script src="lib/elastic.js"></script>
+    <script src="dist/elasticui.js"></script>
+    <link rel="stylesheet" type="text/css" href="sxsw.css">
+    <script>
+!function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","page","once","off","on"];analytics.factory=function(t){return function(){var e=Array.prototype.slice.call(arguments);e.unshift(t);analytics.push(e);return analytics}};for(var t=0;t<analytics.methods.length;t++){var e=analytics.methods[t];analytics[e]=analytics.factory(e)}analytics.load=function(t){var e=document.createElement("script");e.type="text/javascript";e.async=!0;e.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+t+"/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(e,n)};analytics.SNIPPET_VERSION="3.1.0";
+analytics.load("N5ykkusEfiM2riY14ZBHtLDiA6A3cw36");
+analytics.page()
+}}();
+        var app = angular
+            .module('tutorial', ['elasticui'])
+            .constant('euiHost', 'http://192.168.33.20/elastic'); // ACTION: change to cluster address
+        app.controller("t2",function($scope){
+           $scope.go = function(e){
+                userid = document.getElementById("userid").value
+                eventid = e._source.eventid
+                console.log("post:",userid,eventid)
+                var http = new XMLHttpRequest();
+                var url = "/sxsw_store/users/"+userid+"/events/"+eventid;
+                http.open("POST", url, true);
+                http.onreadystatechange = function() {//Call a function when the state changes.
+                    if(http.readyState == 4 && http.status == 200) {
+                        console.log(http.responseText);
+                        console.log("refresh")
+                        setTimeout(function(){ $scope.indexVM.refresh(); }, 600);
+                        analytics.track("add")
+                    }
+                    if(http.status != 200){
+                    
+                        console.log("error",http.responseText);
+                    }
+                    
+                }
+                http.send();
+            }
+
+           $scope.nogo = function(e){
+                userid = document.getElementById("userid").value
+                eventid = e._source.eventid
+                console.log("post:",userid,eventid)
+                var http = new XMLHttpRequest();
+                var url = "/sxsw_store/users/"+userid+"/events/"+eventid;
+                http.open("DELETE", url, true);
+                http.onreadystatechange = function() {//Call a function when the state changes.
+                    if(http.readyState == 4 && http.status == 200) {
+                        console.log(http.responseText);
+                        console.log("refresh")
+                        setTimeout(function(){ $scope.indexVM.refresh(); }, 600);
+                        analytics.track("remove")
+                                                
+                    }
+                    if(http.status != 200){
+                    
+                        console.log("error",http.responseText);
+                    }
+                    
+                }
+                http.send();
+            }
+
+        });
+    </script>
+    
+</head>
+<body ng-app="tutorial" ng-controller="t2" eui-index="'sxswevents'"  eui-enabled="true">
+
+    <div class="container-fluid">
+
+        <div class="row">
+                        <div class="col-xs-3 col-xs-offset-9 sidebar">
+                        <h1>My Schedule</h1>
+                        <select id="userid">
+                            <option value="gerbrand">Gerbrand</option>
+                        </select>
+            </div>
+            <div class="col-xs-3 sidebar">
+                <h3>Search</h3>
+                <eui-searchbox field="'description'"></eui-searchbox> <!-- ACTION: change to field to search on -->
+                <h3>Who's attending</h3>
+                <eui-singleselect field="'attendees'" size="30"></eui-singleselect> <!-- ACTION: change to field to use as facet -->
+                <h3>Date</h3>
+                <eui-checklist field="'date_raw'" size="10"></eui-checklist> <!-- ACTION: change to field to use as facet -->
+                <h3>Format</h3>
+                <eui-checklist field="'format'" size="30"></eui-checklist> <!-- ACTION: change to field to use as facet -->
+                <h3>Venue</h3>
+                <eui-checklist field="'venue_name'" size="30"></eui-checklist> <!-- ACTION: change to field to use as facet -->
+                <h3>Track</h3>
+                <eui-checklist field="'track'" size="30"></eui-checklist> <!-- ACTION: change to field to use as facet -->
+                <h3>Eventtype</h3>
+                <eui-checklist field="'eventtype'" size="30"></eui-checklist> <!-- ACTION: change to field to use as facet -->
+                <h3>Level</h3>
+                <eui-checklist field="'level'" size="30"></eui-checklist> <!-- ACTION: change to field to use as facet -->
+                <h3>Tags</h3>
+                <eui-checklist field="'tags'" size="30"></eui-checklist> <!-- ACTION: change to field to use as facet -->
+                <h3>Results Per Page</h3>
+                <select ng-model="indexVM.pageSize">
+                    <option ng-repeat="item in [10, 20, 50, 100]">{{item}}</option>
+                </select>
+            </div>
+            <div class="col-xs-6 col-xs-offset-3 main">
+                <h1>Results ({{indexVM.results.hits.total}})</h1>
+                <ul>
+                    <li class="event" ng-repeat="doc in indexVM.results.hits.hits" eui-sort="ejs.Sort('utime_start').order('asc')" eui-enabled="true">
+                        <button ng-if="doc._source.attendees != 'gerbrand'" ng-click="go(doc)">GO</button><button  ng-if="doc._source.attendees == 'gerbrand'" ng-click="nogo(doc)">Remove</button>
+                        <h2>{{doc._source.title}}</h2>
+                        <div class="eventcontainer">
+                        <div class="content">
+                        <div class="date_raw"><em>Date:</em>{{doc._source.date_raw}} {{doc._source.time_raw}}</div>
+                        <div class="date_raw"><em>Track:</em>{{doc._source.track}} </div>
+                        <div class="date_raw"><em>Format:</em>{{doc._source.format}}</div>
+                        <div class="date_raw"><em>Level:</em>{{doc._source.level}}</div>
+                        <div ng-if="doc._source.attendees" class="attendees"><em>Attending:</em><p ng-repeat="att in doc._source.attendees" >&nbsp;{{att}},</p></div>
+                        </div>
+                        <div class="presenters">
+                            <h3>Presenters:</h3>
+                            <ul>
+                                <li ng-repeat="pres in doc._source.presenters">
+                                    {{pres.name}} ({{pres.company}})                    
+                                </li>
+                            </ul>
+                        </div>
+                        </div>
+     <div style='clear:both;'><!--clear--></div> 
+                        
+                </ul>
+                <eui-simple-paging></eui-simple-paging>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

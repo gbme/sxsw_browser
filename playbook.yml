@@ -1,0 +1,51 @@
+---
+- hosts: all
+  sudo: true
+  tasks:
+  - name: Update APT package cache
+    apt: update_cache=yes cache_valid_time=86400
+
+  - name: ensure packages required are installed
+    apt: pkg={{ item  }} state=latest
+    with_items:
+      - python-pip
+      - build-essential
+      - python-dev
+      - nginx
+      - libxml2-dev 
+      - libxslt-dev
+      - python-lxml
+      - sqlite3 
+      - libsqlite3-dev
+      - openjdk-7-jre-headless
+
+  - name: install pip modules
+    pip:  name={{item}} state=present
+    with_items:
+      - requests
+      - bottle
+      
+
+
+  - file: path=/vagrant/data state=directory
+  - file: path=/vagrant/logs state=directory
+  - file: src=/vagrant/initscript.sh dest=/etc/init.d/sxsw owner=root group=root state=link  
+  - shell: update-rc.d sxsw defaults
+  - service: name=sxsw state=restarted
+
+  - name: download Elasticsearch
+    get_url: url="https://download.elasticsearch.org/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.1.1/elasticsearch-2.1.1.deb" dest="/home/vagrant/elasticsearch-2.1.1.deb"
+    
+  - name: install Elasticsearch
+    apt: deb="/home/vagrant/elasticsearch-2.1.1.deb"
+    sudo: true
+
+  - name: symlink nginx config
+    copy: src=nginx.default dest=/etc/nginx/sites-available/default owner=root group=root mode=0644 force=yes
+
+    
+  - name: restart services
+    service: name={{item}} state=restarted
+    with_items:
+      - nginx
+      - elasticsearch
