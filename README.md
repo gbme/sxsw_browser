@@ -8,7 +8,6 @@ Requirements:
 * [Ansible installed](http://docs.ansible.com/ansible/intro_installation.html#installation)
 
 ### Init and provision vagrant box
-
 `vagrant up`
 
 ### Fill searchdatabase width SXSW schedule

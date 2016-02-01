@@ -1,0 +1,5 @@
+data/*
+data
+.vagrant
+.vagrant/*
+logs/*

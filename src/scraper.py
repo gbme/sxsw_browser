@@ -37,7 +37,6 @@ def get_event(eventid):
     res["time_raw"] = event.xpath("//div[@id='detail_time']/p/text()")[2].replace("\n","")
     timestring = res["date_raw"]+" 2016 " +(res["time_raw"]).split(" - ")[0].replace(" ","0")
     date_object = datetime.strptime(timestring, '%A, %B %d %Y %H:%M%p')
-    print date_object
     res["utime_start"] = int(time.mktime(date_object.timetuple()))*1000
     res["venue_url"] = get_first(event.xpath("//a[@class='detail_venue']/@href"))
     res["detail_room"] = get_first(event.xpath("//span[@class='detail_room']/text()"))
