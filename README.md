@@ -26,3 +26,8 @@ Access the page: <http://192.168.33.20/sxsw/>
 Raw access to the Elastic index: <http://192.168.33.20/elastic/>
 
 Whether you go to an event or not is stored in both the Elastic index and a SQLite database. Upon refilling the index the data from SQLite is used to enrich the data.
+
+### Troubleshooting
+After a restart of the Vagrant box the elasticsearch and event-store processes somtimes need to be restarted. 
+
+`/vagrant/restart.sh`

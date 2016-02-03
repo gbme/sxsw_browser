@@ -42,6 +42,7 @@
 
   - name: symlink nginx config
     copy: src=nginx.default dest=/etc/nginx/sites-available/default owner=root group=root mode=0644 force=yes
+  - shell: update-rc.d elasticsearch defaults
 
     
   - name: restart services
