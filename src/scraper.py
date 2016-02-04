@@ -50,6 +50,7 @@ def get_event(eventid):
     res["level"] = get_first(event.xpath("//div[@class='block' and ./span/text()='Level']/div/text()")).replace("\n","")
     tags = event.xpath("//div[@class='block' and ./span/text()='Tags']/div/a")
     res["url"] = get_first(event.xpath("//div[@class='details']/div[ ./span/text()='Online']/a/@href"))
+
     res["tags"] = []
     for tag in tags:
         res["tags"].append(tag.text)

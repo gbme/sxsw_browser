@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>ElasticUI Demo</title>
+    <title>SXSW Panel Browser</title>
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
     <script src="lib/elasticsearch.angular.js"></script>
@@ -108,7 +108,7 @@ analytics.page()
                 <ul>
                     <li class="event" ng-repeat="doc in indexVM.results.hits.hits" eui-sort="ejs.Sort('utime_start').order('asc')" eui-enabled="true">
                         <button ng-if="doc._source.attendees != 'gerbrand'" ng-click="go(doc)">GO</button><button  ng-if="doc._source.attendees == 'gerbrand'" ng-click="nogo(doc)">Remove</button>
-                        <h2>{{doc._source.title}}</h2>
+                        <h2><a target="sxswwindow" ng-href="http://schedule.sxsw.com/events/{{doc._source.eventid}}">{{doc._source.title}}</a></h2>
                         <div class="eventcontainer">
                         <div class="content">
                         <div class="date_raw"><em>Date:</em>{{doc._source.date_raw}} {{doc._source.time_raw}}</div>
@@ -126,7 +126,7 @@ analytics.page()
                             </ul>
                         </div>
                         </div>
-     <div style='clear:both;'><!--clear--></div> 
+     <div style='clear:both;'><!--clear--><img src=""{{doc._source.description}}</div> 
                         
                 </ul>
                 <eui-simple-paging></eui-simple-paging>
