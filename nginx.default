@@ -37,6 +37,7 @@ server {
 
 
         location /sxsw/ {
+		sendfile off;
                 alias /vagrant/web/;
         }
 

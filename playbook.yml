@@ -18,6 +18,8 @@
       - sqlite3 
       - libsqlite3-dev
       - openjdk-7-jre-headless
+      - joe
+      
 
   - name: install pip modules
     pip:  name={{item}} state=present
@@ -25,8 +27,6 @@
       - requests
       - bottle
       
-
-
   - file: path=/vagrant/data state=directory
   - file: path=/vagrant/logs state=directory
   - file: src=/vagrant/initscript.sh dest=/etc/init.d/sxsw owner=root group=root state=link  
