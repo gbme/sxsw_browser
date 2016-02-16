@@ -24,22 +24,22 @@ server {
 
 	# Make site accessible from http://localhost/
 	server_name localhost;
+#    if ($cookie_sxswuserid != "gerbrand")  { return 403; }
+    location /elastic/ {
+            proxy_pass  http://127.0.0.1:9200/;
+            proxy_redirect     off;
+    }
 
-        location /elastic/ {
-                proxy_pass  http://127.0.0.1:9200/;
-                proxy_redirect     off;
-        }
-
-        location /sxsw_store/ {
-                proxy_pass  http://127.0.0.1:8081/;
-                proxy_redirect     off;
-        }
+    location /sxsw_store/ {
+            proxy_pass  http://127.0.0.1:8081/;
+            proxy_redirect     off;
+    }
 
 
-        location /sxsw/ {
-		sendfile off;
-                alias /vagrant/web/;
-        }
+    location /sxsw/ {
+    sendfile off;
+            alias /vagrant/web/;
+    }
 
 	#error_page 404 /404.html;
 

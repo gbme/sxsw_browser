@@ -5,7 +5,7 @@ from os import path
 
 import log
 logger = log.setup('root','importer.log')
-
+import os.path
 
 elastic_url = "http://127.0.0.1:9200"
 store_url = "http://127.0.0.1:8081"
@@ -41,7 +41,9 @@ def reset():
       "_all":       { "enabled": False  },
       "properties":
           {
+            "status":            { "type": "string"  },
             "title":            { "type": "string"  },
+            "rsvp":            { "type": "boolean"  },
             "venue_name":       { "type": "string" , "analyzer" : "keyword"  },
             "description":      { "type": "string"  },
             "event-image":      { "type": "string"  },
@@ -102,9 +104,27 @@ def fill():
     for file in files:
         try:
             filename = "/vagrant/data/"+file
+            oldfilename = "/vagrant/data_old/"+file
             f = open(filename,"r")
             _d = f.read()
             data = json.loads(_d)
+            f.close()
+            data_old = False
+            if os.path.isfile(oldfilename):
+                f = open(oldfilename,"r")
+                _d = f.read()
+                data_old = json.loads(_d)
+                f.close()
+
+            if not(data_old):  
+                data["status"] = "new"
+            else:
+                if data == data_old:
+#                    data["status"] = "existing"
+                    pass
+                else:
+                    data["status"] = "changed"
+            data["searchdata"] = data["title"]+data["description"]+str(data["tags"])+str(data["presenters"])
             data["attendees"] =  get_users_for_event(data["eventid"])
             d = requests.put(elastic_url+"/sxswevents/event/"+file  ,data=json.dumps(data,cls=DecimalEncoder),headers=headers)
             logger.debug( d.content )

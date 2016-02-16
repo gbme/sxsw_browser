@@ -9,6 +9,29 @@
     <script src="dist/elasticui.js"></script>
     <link rel="stylesheet" type="text/css" href="sxsw.css">
     <script>
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+    }
+    return "";
+}    
+
+function set_userid(userid) {
+    setCookie("sxswuserid",userid,365)
+    console.log("set userid to:"+userid)
+}
+    
 !function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","page","once","off","on"];analytics.factory=function(t){return function(){var e=Array.prototype.slice.call(arguments);e.unshift(t);analytics.push(e);return analytics}};for(var t=0;t<analytics.methods.length;t++){var e=analytics.methods[t];analytics[e]=analytics.factory(e)}analytics.load=function(t){var e=document.createElement("script");e.type="text/javascript";e.async=!0;e.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+t+"/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(e,n)};analytics.SNIPPET_VERSION="3.1.0";
 analytics.load("N5ykkusEfiM2riY14ZBHtLDiA6A3cw36");
 analytics.page()
@@ -63,6 +86,12 @@ analytics.page()
                 }
                 http.send();
             }
+             angular.element(document).ready(function () {
+                if(getCookie("sxswuserid"))
+                {
+                    document.getElementById("userid").value = getCookie("sxswuserid")
+                }
+            });
 
         });
     </script>
@@ -75,15 +104,17 @@ analytics.page()
         <div class="row">
                         <div class="col-xs-3 col-xs-offset-9 sidebar">
                         <h1>My Schedule</h1>
-                        <select id="userid">
-                            <option value="gerbrand">Gerbrand</option>
-                        </select>
+                        <label for="userid">User:</label><input id="userid" onchange="set_userid(this.value)"/>
             </div>
             <div class="col-xs-3 sidebar">
                 <h3>Search</h3>
-                <eui-searchbox field="'description'"></eui-searchbox> <!-- ACTION: change to field to search on -->
+                <eui-searchbox field="'searchdata'"></eui-searchbox> <!-- ACTION: change to field to search on -->
                 <h3>Who's attending</h3>
                 <eui-singleselect field="'attendees'" size="30"></eui-singleselect> <!-- ACTION: change to field to use as facet -->
+                <h3>Status</h3>
+                <eui-checklist field="'status'" size="10"></eui-checklist> <!-- ACTION: change to field to use as facet -->
+                <h3>RSVP</h3>
+                <eui-checklist field="'rsvp'" size="10"></eui-checklist> <!-- ACTION: change to field to use as facet -->
                 <h3>Date</h3>
                 <eui-checklist field="'date_raw'" size="10"></eui-checklist> <!-- ACTION: change to field to use as facet -->
                 <h3>Format</h3>
@@ -126,7 +157,7 @@ analytics.page()
                             </ul>
                         </div>
                         </div>
-     <div style='clear:both;'><!--clear--><img src=""{{doc._source.description}}</div> 
+     <div style='clear:both;'><!--clear-->{{doc._source.description}}</div> 
                         
                 </ul>
                 <eui-simple-paging></eui-simple-paging>
