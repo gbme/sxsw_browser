@@ -35,6 +35,12 @@ li.event {
     list-style: none;
     width: 100%;
     position: relative;
+    padding-bottom: 10px;
+}
+
+a.remove{
+    font-size: 75%;
+    text-decoration: underline;
 }
 
 .eventcontainer {

@@ -155,9 +155,8 @@
             <ul>
                 <li class="event" ng-repeat="doc in myevents.hits.hits"
                     eui-sort="ejs.Sort('utime_start').order('asc')" eui-enabled="true">
-                    <div class="date_raw"><em>{{doc._source.date_raw}} {{doc._source.time_raw}}</em></div>
-                    <button ng-if="doc._source.attendees == $parent.user" ng-click="nogo(doc)">x</button>
-                    <a target="sxswwindow" ng-href="http://schedule.sxsw.com/events/{{doc._source.eventid}}">{{doc._source.title}}</a>
+                    <div ng-hide="doc._source.utime_start ==  myevents.hits.hits[$index-1]._source.utime_start" class="date_raw"><em>{{doc._source.date_raw}} {{doc._source.time_raw.split("-")[0]}}</em></div>
+                    <a target="sxswwindow" ng-href="http://schedule.sxsw.com/events/{{doc._source.eventid}}">{{doc._source.title}}</a>&nbsp;<a class="remove" ng-click="nogo(doc)">remove</a>
                 </li>
                 <li class="event" ng-hide="myevents.hits.hits.length">No Events in schedule</li>
 
@@ -200,20 +199,22 @@
             <ul class="mainlist">
                 <li class="event" ng-repeat="doc in indexVM.results.hits.hits"
                     eui-sort="ejs.Sort('utime_start').order('asc')" eui-enabled="true">
-                    <button ng-if="doc._source.attendees != $parent.user" ng-click="go(doc)">GO</button>
+                    <button ng-if="doc._source.attendees != $parent.user" ng-click="go(doc)">Add</button>
                     <button ng-if="doc._source.attendees == $parent.user" ng-click="nogo(doc)">Remove</button>
                     <h2><a target="sxswwindow" ng-href="http://schedule.sxsw.com/events/{{doc._source.eventid}}">{{doc._source.title}}</a>
                     </h2>
                     <div class="eventcontainer">
                         <div class="content">
-                            <div class="date_raw"><em>Date:</em>{{doc._source.date_raw}} {{doc._source.time_raw}}</div>
-                            <div class="date_raw"><em>Track:</em>{{doc._source.track}}</div>
-                            <div class="date_raw"><em>Format:</em>{{doc._source.format}}</div>
-                            <div class="date_raw"><em>Level:</em>{{doc._source.level}}</div>
+                            <div class="date_raw"><em>Date: </em>{{doc._source.date_raw}} {{doc._source.time_raw}}</div>
+                            <div class="date_raw"><em>Track: </em>{{doc._source.track}}</div>
+                            <div class="date_raw"><em>Format: </em>{{doc._source.format}}</div>
+                            <div class="date_raw"><em>Level: </em>{{doc._source.level}}</div>
+                            <div class="date_raw"><em>Venue: </em>{{doc._source.venue_name}} {{doc._source.detail_room}}</div>
                             <div ng-if="doc._source.attendees" class="attendees"><em>Attending:</em>
                                 <p ng-repeat="att in doc._source.attendees">&nbsp;{{att}},</p></div>
                         </div>
                         <div class="presenters">
+                            {{doc._source.venue}}
                             <h3>Presenters:</h3>
                             <ul>
                                 <li ng-repeat="pres in doc._source.presenters">
