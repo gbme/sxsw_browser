@@ -42,15 +42,18 @@ analytics.page()
         app.controller("t2",function($scope){
            $scope.go = function(e){
                 userid = document.getElementById("userid").value
+                console.log("userid",userid)
+                if(!userid || userid==""){
+                    alert("User field empty, please enter your name")
+                    return;
+                }
                 eventid = e._source.eventid
-                console.log("post:",userid,eventid)
                 var http = new XMLHttpRequest();
                 var url = "/sxsw_store/users/"+userid+"/events/"+eventid;
                 http.open("POST", url, true);
                 http.onreadystatechange = function() {//Call a function when the state changes.
                     if(http.readyState == 4 && http.status == 200) {
                         console.log(http.responseText);
-                        console.log("refresh")
                         setTimeout(function(){ $scope.indexVM.refresh(); }, 600);
                         analytics.track("add")
                     }
@@ -66,14 +69,12 @@ analytics.page()
            $scope.nogo = function(e){
                 userid = document.getElementById("userid").value
                 eventid = e._source.eventid
-                console.log("post:",userid,eventid)
                 var http = new XMLHttpRequest();
                 var url = "/sxsw_store/users/"+userid+"/events/"+eventid;
                 http.open("DELETE", url, true);
                 http.onreadystatechange = function() {//Call a function when the state changes.
                     if(http.readyState == 4 && http.status == 200) {
                         console.log(http.responseText);
-                        console.log("refresh")
                         setTimeout(function(){ $scope.indexVM.refresh(); }, 600);
                         analytics.track("remove")
                                                 

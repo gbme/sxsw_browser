@@ -9,7 +9,7 @@ import log
 logger = log.setup('root','scraper.log')
 import subprocess
 
-evenids = []
+eventids = {}
 
 
 def clean_text(t):
@@ -34,13 +34,14 @@ failed = []
 
 def get_event(eventid):
     try:
+        eventids[eventid]=1
         url = event_baseurl+eventid
         logger.debug( url)
         print url
         r = requests.get(url,timeout=1)
         res = {}
         event = html.fromstring(r.content)
-        res["rsvp"] = r.content.find("RSVP") > -1
+        res["rsvp"] = "YES" if r.content.find("RSVP") > -1 else "NO"
         res["eventid"] = eventid
         res["title"]  = get_first(event.xpath("//div[@class='title']/h1/text()")).replace("\n","")
         res["date_raw"] = get_first(event.xpath("//div[@id='detail_time']/p/b/text()"))
@@ -79,14 +80,21 @@ def get_event(eventid):
 def main():
     subprocess.call("rm /vagrant/data_old/*;mv /vagrant/data/* /vagrant/data_old/", shell=True)    
     for day in [11,12,13,14,15]:
-        r = requests.get("http://schedule.sxsw.com/?day="+str(day)+"&conference=interactive")
+        url = "http://schedule.sxsw.com/?day="+str(day)+"&conference=interactive"
+        print url
+        r = requests.get(url)
         tree = html.fromstring(r.content)
         links = tree.xpath('//div[@class="bar interactive"]')
         for link in links:
             eventid = link.get("id").split("cell_")[1]
-            get_event(eventid)
+            print eventid
+            print eventid in eventids
+            if not(eventid in eventids):
+                get_event(eventid)
+        print "handling failed"
         for eventid in failed:
-            get_event(eventid)
+            if not (eventid in eventids):
+                get_event(eventid)
             
 
 

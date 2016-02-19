@@ -43,7 +43,7 @@ def reset():
           {
             "status":            { "type": "string"  },
             "title":            { "type": "string"  },
-            "rsvp":            { "type": "boolean"  },
+            "rsvp":            { "type": "string"  },
             "venue_name":       { "type": "string" , "analyzer" : "keyword"  },
             "description":      { "type": "string"  },
             "event-image":      { "type": "string"  },
