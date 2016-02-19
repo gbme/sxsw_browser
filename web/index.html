@@ -9,6 +9,7 @@
     <script src="dist/elasticui.js"></script>
     <link rel="stylesheet" type="text/css" href="sxsw.css">
     <script>
+        var elasticurl = location.protocol+'//'+location.hostname+"/elastic"
         function setCookie(cname, cvalue, exdays) {
             var d = new Date();
             d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -67,60 +68,62 @@
                 analytics.page()
             }
         }();
+
         var app = angular
-                .module('tutorial', ['elasticui'])
-                .constant('euiHost', 'http://192.168.33.20/elastic'); // ACTION: change to cluster address
-        app.controller("t2", function ($scope) {
+                .module('main', ['elasticui'])
+                .constant('euiHost', elasticurl);
+        app.controller("t2", function ($scope, $http) {
             $scope.user = getCookie("sxswuserid")
-            $scope.change_user = function(e){
+            $scope.change_user = function (e) {
                 console.log(e)
                 set_userid(e)
+                $scope.load_my_events();
 
             }
-             $scope.$watch('user', $scope.change_user)
-            console.log("$scope.user",$scope.user)
+            $scope.myevents = [{_source: {eventid: "!", "title": "test"}}]
+            $scope.load_my_events = function () {
+                $http.get(elasticurl+'/sxswevents/event/_search?q=attendees:'+$scope.user+'&sort=utime_start:asc&size=200')
+                        .success(function (data, status, headers, config) {
+                            console.log(data);
+                            $scope.myevents = data;
+                        }).error(function (data, status, headers, config) {
+                    // log error
+                });
+            }
+
+            $scope.$watch('user', $scope.change_user)
+            console.log("$scope.user", $scope.user)
             $scope.go = function (e) {
-                userid = document.getElementById("userid").value
-                console.log("userid", userid)
-                if (!userid || userid == "") {
-                    alert("User field empty, please enter your name")
-                    return;
-                }
-                eventid = e._source.eventid
-                var http = new XMLHttpRequest();
-                var url = "/sxsw_store/users/" + userid + "/events/" + eventid;
-                http.open("POST", url, true);
-                http.onreadystatechange = function () {//Call a function when the state changes.
-                    if (http.readyState == 4 && http.status == 200) {
-                        console.log(http.responseText);
-                        setTimeout(function () {
-                            $scope.indexVM.refresh();
-                        }, 600);
-                        analytics.track("add")
-                    }
-                    if (http.status != 200) {
-
-                        console.log("error", http.responseText);
-                    }
-
-                }
-                http.send();
+                $scope.change_event_status(e,'POST')
             }
 
             $scope.nogo = function (e) {
-                userid = document.getElementById("userid").value
+                $scope.change_event_status(e,'DELETE')
+            }
+
+            $scope.change_event_status = function(e, method)
+            {
+                if (!$scope.user || $scope.user == "") {
+                    alert("User field empty, please enter your name")
+                    return;
+                }
+                var url;
                 eventid = e._source.eventid
                 var http = new XMLHttpRequest();
-                var url = "/sxsw_store/users/" + userid + "/events/" + eventid;
-                http.open("DELETE", url, true);
+                url = "/sxsw_store/users/" + $scope.user + "/events/" + eventid;
+                http.open(method, url, true);
                 http.onreadystatechange = function () {//Call a function when the state changes.
                     if (http.readyState == 4 && http.status == 200) {
                         console.log(http.responseText);
                         setTimeout(function () {
-                            $scope.indexVM.refresh();
-                        }, 600);
+                            console.log("Refresh index")
+                            $scope.indexVM.refresh(false);
+                        }, 1000);
                         analytics.track("remove")
-
+                        setTimeout(function () {
+                            console.log("refresh")
+                            $scope.load_my_events()
+                        }, 1000);
                     }
                     if (http.status != 200) {
 
@@ -130,32 +133,35 @@
                 }
                 http.send();
             }
-            angular.element(document).ready(function () {
-                if (getCookie("sxswuserid")) {
-                    user = getCookie("sxswuserid")
-                    document.getElementById("userid").value = user
-                }
-            });
-
+            $scope.load_my_events()
         });
     </script>
 
 </head>
-<body ng-app="tutorial" ng-controller="t2" eui-index="'sxswevents'" eui-enabled="true">
+<body ng-app="main" ng-controller="t2" eui-index="'sxswevents'" eui-enabled="true">
 
 <div class="container-fluid">
 
     <div class="row">
         <div class="col-xs-3 col-xs-offset-9 sidebar">
-            <h1>My Schedule</h1>
-            <label for="userid">User:</label>
-            <select  ng-model="user">
+            <h3>Schedule</h3>
+            <label for="user">User:</label>
+            <select ng-model="user">
                 <option value="david">David</option>
                 <option value="gerbrand">Gerbrand</option>
                 <option value="joost">Joost</option>
                 <option value="reinier">Reinier</option>
             </select>
-            {{user2}}
+            <ul>
+                <li class="event" ng-repeat="doc in myevents.hits.hits"
+                    eui-sort="ejs.Sort('utime_start').order('asc')" eui-enabled="true">
+                    <div class="date_raw"><em>{{doc._source.date_raw}} {{doc._source.time_raw}}</em></div>
+                    <button ng-if="doc._source.attendees == $parent.user" ng-click="nogo(doc)">x</button>
+                    <a target="sxswwindow" ng-href="http://schedule.sxsw.com/events/{{doc._source.eventid}}">{{doc._source.title}}</a>
+                </li>
+                <li class="event" ng-hide="myevents.hits.hits.length">No Events in schedule</li>
+
+            </ul>
         </div>
         <div class="col-xs-3 sidebar">
             <h3>Search</h3>
@@ -191,7 +197,7 @@
         </div>
         <div class="col-xs-6 col-xs-offset-3 main">
             <h1>Results ({{indexVM.results.hits.total}})</h1>
-            <ul>
+            <ul class="mainlist">
                 <li class="event" ng-repeat="doc in indexVM.results.hits.hits"
                     eui-sort="ejs.Sort('utime_start').order('asc')" eui-enabled="true">
                     <button ng-if="doc._source.attendees != $parent.user" ng-click="go(doc)">GO</button>
