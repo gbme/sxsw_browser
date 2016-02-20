@@ -37,7 +37,7 @@ def get_event(eventid):
         eventids[eventid]=1
         url = event_baseurl+eventid
         logger.debug( url)
-        print url
+        print url + "\t" + str(len(eventids.keys()))
         r = requests.get(url,timeout=1)
         res = {}
         event = html.fromstring(r.content)
@@ -47,7 +47,7 @@ def get_event(eventid):
         res["date_raw"] = get_first(event.xpath("//div[@id='detail_time']/p/b/text()"))
         res["time_raw"] = event.xpath("//div[@id='detail_time']/p/text()")[2].replace("\n","")
         timestring = res["date_raw"]+" 2016 " +(res["time_raw"]).split(" - ")[0].replace(" ","0")
-        date_object = datetime.strptime(timestring, '%A, %B %d %Y %H:%M%p')
+        date_object = datetime.strptime(timestring, '%A, %B %d %Y %I:%M%p')
         res["utime_start"] = int(date_object.strftime("%s"))*1000
         res["venue_url"] = get_first(event.xpath("//a[@class='detail_venue']/@href"))
         res["detail_room"] = get_first(event.xpath("//span[@class='detail_room']/text()"))
@@ -87,8 +87,6 @@ def main():
         links = tree.xpath('//div[@class="bar interactive"]')
         for link in links:
             eventid = link.get("id").split("cell_")[1]
-            print eventid
-            print eventid in eventids
             if not(eventid in eventids):
                 get_event(eventid)
         print "handling failed"
