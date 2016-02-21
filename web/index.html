@@ -69,11 +69,17 @@
             }
         }();
 
+        function check_user(){
+
+
+        }
+
+
         var app = angular
                 .module('main', ['elasticui'])
                 .constant('euiHost', elasticurl);
         app.controller("t2", function ($scope, $http) {
-            $scope.user = getCookie("sxswuserid")
+            $scope.user = check_user()
             $scope.change_user = function (e) {
                 console.log(e)
                 set_userid(e)
@@ -81,6 +87,17 @@
 
             }
             $scope.myevents = [{_source: {eventid: "!", "title": "test"}}]
+            $scope.check_user = function(){
+                console.log("check");
+                $http.get("/sxsw_store/api/auth/check")
+                        .success(function (data, status, headers, config) {
+                            console.log(data);
+                            $scope.user = data.handle;
+                        }).error(function (data, status, headers, config) {
+                    // log error
+                });
+
+            },
             $scope.load_my_events = function () {
                 $http.get(elasticurl+'/sxswevents/event/_search?q=attendees:'+$scope.user+'&sort=utime_start:asc&size=200')
                         .success(function (data, status, headers, config) {
@@ -133,7 +150,7 @@
                 }
                 http.send();
             }
-            $scope.load_my_events()
+            $scope.check_user()
         });
     </script>
 
