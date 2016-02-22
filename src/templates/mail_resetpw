@@ -5,23 +5,21 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Smartocto invite</title>
   </head>
-  <body itemscope="" itemtype="http://schema.org/EmailMessage">&#13;
-&#13;
-<table class="body-wrap"><tr><td></td>&#13;
-		<td class="container" width="600">&#13;
-			<div class="content">&#13;
-				<table class="main" width="100%" cellpadding="0" cellspacing="0"><tr><td class="alert alert-warning">&#13;
-						</td>&#13;
-					</tr><tr><td class="content-wrap">&#13;
-							<table width="100%" cellpadding="0" cellspacing="0"><tr><td class="content-block">&#13;
-									Je wilt je wachtwoord resetten. Doe dit binnen 10 minuten.&#13;
-									</td>&#13;
-								</tr><tr><td class="content-block">&#13;
-										<a href="{{url}}" class="btn-primary">Reset password</a>&#13;
-									</td>&#13;
-								</tr><tr></tr></table></td>&#13;
-					</tr></table></div>&#13;
-		</td>&#13;
-		<td></td>&#13;
+  <body itemscope="" itemtype="http://schema.org/EmailMessage">
+
+<table class="body-wrap"><tr><td></td>
+		<td class="container" width="600">
+			<div class="content">
+				<table class="main" width="100%" cellpadding="0" cellspacing="0"><tr><td class="alert alert-warning">
+						</td>
+					</tr><tr><td class="content-wrap">
+							<table width="100%" cellpadding="0" cellspacing="0"><tr><td class="content-block">Click link to login.<td>
+								</tr><tr><td class="content-block">
+										<a href="{{url}}" class="btn-primary">Login to sxsw browser</a>
+									</td>
+								</tr><tr></tr></table></td>
+					</tr></table></div>
+		</td>
+		<td></td>
 	</tr></table></body>
 </html>

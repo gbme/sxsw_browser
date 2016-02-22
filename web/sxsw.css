@@ -38,14 +38,24 @@ li.event {
     padding-bottom: 10px;
 }
 
-a.remove{
+div.licontainer{
+    position:relative;
+
+}
+
+a.actionlink{
     font-size: 75%;
     text-decoration: underline;
+    cursor:pointer;
 }
 
 .eventcontainer {
     display: flex;
     font-size: 12px;
+
+}
+button {
+    font-size: 15px;
 
 }
 
@@ -54,6 +64,7 @@ a.remove{
     top: 0px;
     right: 0px;
     z-index: 1000;
+    font-size: 15px;
 }
 
 div.content {
