@@ -332,7 +332,7 @@
                                 <div class="date_raw"><em>Date: </em>{{doc._source.date_raw}} {{doc._source.time_raw}}
                                 </div>
                                 <div class="date_raw"><em>Track: </em>{{doc._source.track}}</div>
-                                <div class="date_raw"><em>Format: </em>{{doc._source.format}}</div>
+                                <div class="date_raw"><em>Format: </em>{{doc._source.format}} {{doc._source.rsvp=="yes";"";" (RSVP)"}}</div>
                                 <div class="date_raw"><em>Level: </em>{{doc._source.level}}</div>
                                 <div class="date_raw"><em>Venue: </em>{{doc._source.venue_name}}
                                     {{doc._source.detail_room}}
