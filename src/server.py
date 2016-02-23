@@ -5,23 +5,27 @@ from datetime import datetime, timedelta
 import log
 import uuid
 import urllib
-
+import config as CONFIG
 logger = log.setup('root', 'sxsw.log')
 from email.utils import parseaddr
 from passlib.apps import custom_app_context as pwd_context
 import os
 import sqlite3
 
+
 authdir = "/vagrant/auth/"
 conn = sqlite3.connect('/vagrant/sxsw2.db')
-domain = "test.gbme.nl"
-app_root = "sxsw_store"
-static_root = "sxsw"
-protocol = "https://"
+logger.debug(CONFIG)
+logger.debug(CONFIG.global_config.domain)
+domain = CONFIG.global_config.domain
+app_root = CONFIG.global_config.app_root
+static_root = CONFIG.global_config.static_root
+protocol = CONFIG.global_config.protocol
 base_url = protocol + domain + "/" + app_root
 homepage = protocol + domain + "/" + static_root + "/"
 cookiedomain = domain
 port = 8081
+logger.debug(domain)
 
 
 class DecimalEncoder(json.JSONEncoder):
@@ -292,7 +296,7 @@ def logout(message = False):
     logger.debug("logout")
     if auth_cookie:
         logger.debug("remove cookie:"+CONFIG.global_config.cookie_store+auth_cookie)
-        rm(CONFIG.global_config.cookie_store+auth_cookie)
+        rm(authdir+auth_cookie)
     response.status = 200
     response.add_header("Content-type", "application/json")
     response.delete_cookie("AUTH_COOKIE")
