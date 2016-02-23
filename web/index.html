@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
     <title>SXSW Panel Browser</title>
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
@@ -9,7 +9,7 @@
     <script src="dist/elasticui.js"></script>
     <link rel="stylesheet" type="text/css" href="sxsw.css">
     <script>
-        var elasticurl = location.protocol+'//'+location.hostname+"/elastic"
+        var elasticurl = location.protocol + '//' + location.hostname + "/elastic"
         function setCookie(cname, cvalue, exdays) {
             var d = new Date();
             d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -69,11 +69,11 @@
             }
         }();
 
+
         var app = angular
                 .module('main', ['elasticui'])
                 .constant('euiHost', elasticurl);
-        app.controller("t2", function ($scope, $http) {
-            $scope.user = getCookie("sxswuserid")
+        app.controller("t2", function ($scope, $http, $timeout) {
             $scope.change_user = function (e) {
                 console.log(e)
                 set_userid(e)
@@ -81,32 +81,137 @@
 
             }
             $scope.myevents = [{_source: {eventid: "!", "title": "test"}}]
-            $scope.load_my_events = function () {
-                $http.get(elasticurl+'/sxswevents/event/_search?q=attendees:'+$scope.user+'&sort=utime_start:asc&size=200')
+            $scope.check_user = function () {
+                console.log("check");
+                $http.get("/sxsw_store/api/auth/check")
                         .success(function (data, status, headers, config) {
                             console.log(data);
-                            $scope.myevents = data;
+                            $scope.user = data.handle;
                         }).error(function (data, status, headers, config) {
                     // log error
                 });
-            }
+
+            },
+                    $scope.load_my_events = function () {
+                        $http.get(elasticurl + '/sxswevents/event/_search?q=attendees:' + $scope.user + '&sort=utime_start:asc&size=200')
+                                .success(function (data, status, headers, config) {
+                                    console.log(data);
+                                    $scope.myevents = data;
+                                }).error(function (data, status, headers, config) {
+                            // log error
+                        });
+                    }
 
             $scope.$watch('user', $scope.change_user)
             console.log("$scope.user", $scope.user)
             $scope.go = function (e) {
-                $scope.change_event_status(e,'POST')
+                $scope.change_event_status(e, 'POST')
             }
 
             $scope.nogo = function (e) {
-                $scope.change_event_status(e,'DELETE')
+                $scope.change_event_status(e, 'DELETE')
+            }
+            $scope.show_invite = function () {
+                $scope.invitemode = true
             }
 
-            $scope.change_event_status = function(e, method)
-            {
-                if (!$scope.user || $scope.user == "") {
-                    alert("User field empty, please enter your name")
-                    return;
-                }
+            $scope.show_confirmation_message= function(message){
+
+                            $scope.confirmation = message;
+                            $timeout(function () {
+                                console.log("exit invite mode");
+                                $scope.confirmation = false;
+                            }, 2000)
+
+
+            }
+
+
+            $scope.submit_invite = function () {
+                //$scope.invitemode = false;
+                console.log("submit invite")
+                data = JSON.stringify({
+                    new_email: document.getElementById("new_email").value,
+                })
+                $http.post("/sxsw_store/api/users/invite/", data)
+                        .then(function (data, status, headers, config) {
+                            console.log(data);
+                            $scope.invitemode = false
+                            if (data.data.message) {
+                                $scope.show_confirmation_message(data.data.message);
+                            }
+                            else {
+                                $scope.show_confirmation_message("Done");
+                            }
+                        }, function (data, status, headers, config) {
+                            // log error
+                        });
+            }
+
+            /*
+             $scope.submit_login = function () {
+             console.log("submit login")
+             data = JSON.stringify({
+             userid: document.getElementById("email").value,
+             //                    "password": document.getElementById("passwd").value,
+             })
+             $http.post("/sxsw_store/api/auth/login/", data)
+             .then(function (data, status, headers, config) {
+             console.log(data);
+             if(!data.loggedin){
+             alert("Login failed")
+             }
+             if(data.message)
+             {
+             alert(data.message)
+             }
+             $scope.check_user();
+             //                            $scope.user = data.handle;
+             }, function (data, status, headers, config) {
+             // log error
+             });
+
+             }
+             */
+
+            $scope.submit_forgot = function () {
+                console.log("submit forgot")
+                data = JSON.stringify({
+                    userid: document.getElementById("forgot_email").value,
+                })
+                $http.post("/sxsw_store/api/auth/forgot/", data)
+                        .then(function (data, status, headers, config) {
+                            console.log(data);
+                            if (data.data.message) {
+                                $scope.show_confirmation_message(data.data.message);
+                            }
+                            else {
+                                $scope.show_confirmation_message("Done");
+                            }
+                            $scope.check_user();
+//                            $scope.user = data.handle;
+                        }, function (data, status, headers, config) {
+                            // log error
+                        });
+
+            }
+
+
+            $scope.logout = function () {
+                console.log("submit logout")
+                $http.post("/sxsw_store/api/auth/logout/")
+                        .then(function (data, status, headers, config) {
+                            console.log(data);
+                            $scope.check_user();
+//                            $scope.user = data.handle;
+                        }, function (data, status, headers, config) {
+                            // log error
+                        });
+
+            }
+
+
+            $scope.change_event_status = function (e, method) {
                 var url;
                 eventid = e._source.eventid
                 var http = new XMLHttpRequest();
@@ -133,7 +238,7 @@
                 }
                 http.send();
             }
-            $scope.load_my_events()
+            $scope.check_user()
         });
     </script>
 
@@ -143,21 +248,33 @@
 <div class="container-fluid">
 
     <div class="row">
-        <div class="col-xs-3 col-xs-offset-9 sidebar">
+        <div ng-hide="user" class="col-xs-3 col-xs-offset-9 sidebar">
+            <h4>Log in to add sessions to your schedule</h4>
+            <label for="email">Email: <input type="text" id="forgot_email"/></label>
+            <button ng-click="submit_forgot()">Log in</button>
+        </div>
+        <div ng-show="!confirmation && user && invitemode" class="col-xs-3 col-xs-offset-9 sidebar">
+            <h4>Email adress to send the invite to:<br/></h4>
+            <label for="email">Email:<input type="text" id="new_email"/></label>
+            <button ng-click="submit_invite()">Invite</button>
+        </div>
+        <div ng-show="confirmation" class="col-xs-3 col-xs-offset-9 sidebar">
+            <h4>{{confirmation}}</h4>
+        </div>
+        <div ng-show="!confirmation && user && !invitemode" class="col-xs-3 col-xs-offset-9 sidebar">
+            <h3>
+                <button ng-click="show_invite()">Invite a new user...</button>
+            </h3>
+
             <h3>Schedule</h3>
-            <label for="user">User:</label>
-            <select ng-model="user">
-                <option value="david">David</option>
-                <option value="gerbrand">Gerbrand</option>
-                <option value="joost">Joost</option>
-                <option value="reinier">Reinier</option>
-                <option value="stijn">Stijn</option>
-            </select>
+            <label for="user">User: {{user}}</label> <a class="actionlink" ng-click="logout()">logout</a>
             <ul>
                 <li class="event" ng-repeat="doc in myevents.hits.hits"
                     eui-sort="ejs.Sort('utime_start').order('asc')" eui-enabled="true">
-                    <div ng-hide="doc._source.utime_start ==  myevents.hits.hits[$index-1]._source.utime_start" class="date_raw"><em>{{doc._source.date_raw}} {{doc._source.time_raw.split("-")[0]}}</em></div>
-                    <a target="sxswwindow" ng-href="http://schedule.sxsw.com/events/{{doc._source.eventid}}">{{doc._source.title}}</a>&nbsp;<a class="remove" ng-click="nogo(doc)">remove</a>
+                    <div ng-hide="doc._source.utime_start ==  myevents.hits.hits[$index-1]._source.utime_start"
+                         class="date_raw"><em>{{doc._source.date_raw}} {{doc._source.time_raw.split("-")[0]}}</em></div>
+                    <a target="sxswwindow" ng-href="http://schedule.sxsw.com/events/{{doc._source.eventid}}">{{doc._source.title}}</a>&nbsp;<a
+                        class="actionlink" ng-click="nogo(doc)">remove</a>
                 </li>
                 <li class="event" ng-hide="myevents.hits.hits.length">No Events in schedule</li>
 
@@ -200,32 +317,42 @@
             <ul class="mainlist">
                 <li class="event" ng-repeat="doc in indexVM.results.hits.hits"
                     eui-sort="ejs.Sort('utime_start').order('asc')" eui-enabled="true">
-                    <button ng-if="doc._source.attendees != $parent.user" ng-click="go(doc)">Add</button>
-                    <button ng-if="doc._source.attendees == $parent.user" ng-click="nogo(doc)">Remove</button>
-                    <h2><a target="sxswwindow" ng-href="http://schedule.sxsw.com/events/{{doc._source.eventid}}">{{doc._source.title}}</a>
+                    <h2 ng-hide="doc._source.utime_start ==  indexVM.results.hits.hits[$index-1]._source.utime_start"><a
+                            target="sxswwindow" ng-href="">{{doc._source.date_raw}} {{doc._source.time_raw}}</a>
                     </h2>
-                    <div class="eventcontainer">
-                        <div class="content">
-                            <div class="date_raw"><em>Date: </em>{{doc._source.date_raw}} {{doc._source.time_raw}}</div>
-                            <div class="date_raw"><em>Track: </em>{{doc._source.track}}</div>
-                            <div class="date_raw"><em>Format: </em>{{doc._source.format}}</div>
-                            <div class="date_raw"><em>Level: </em>{{doc._source.level}}</div>
-                            <div class="date_raw"><em>Venue: </em>{{doc._source.venue_name}} {{doc._source.detail_room}}</div>
-                            <div ng-if="doc._source.attendees" class="attendees"><em>Attending:</em>
-                                <p ng-repeat="att in doc._source.attendees">&nbsp;{{att}},</p></div>
+                    <div class="licontainer">
+                        <h3><a target="sxswwindow" ng-href="http://schedule.sxsw.com/events/{{doc._source.eventid}}">{{doc._source.title}}→</a>
+                            <button ng-if="user && doc._source.attendees != $parent.user" ng-click="go(doc)">Add
+                            </button>
+                            <button ng-if="user && doc._source.attendees == $parent.user" ng-click="nogo(doc)">Remove
+                            </button>
+                        </h3>
+                        <div class="eventcontainer">
+                            <div class="content">
+                                <div class="date_raw"><em>Date: </em>{{doc._source.date_raw}} {{doc._source.time_raw}}
+                                </div>
+                                <div class="date_raw"><em>Track: </em>{{doc._source.track}}</div>
+                                <div class="date_raw"><em>Format: </em>{{doc._source.format}}</div>
+                                <div class="date_raw"><em>Level: </em>{{doc._source.level}}</div>
+                                <div class="date_raw"><em>Venue: </em>{{doc._source.venue_name}}
+                                    {{doc._source.detail_room}}
+                                </div>
+                                <div ng-if="doc._source.attendees" class="attendees"><em>Attending:</em>
+                                    <p ng-repeat="att in doc._source.attendees">&nbsp;{{att}},</p></div>
+                            </div>
+                            <div class="presenters">
+                                {{doc._source.venue}}
+                                <h3>Presenters:</h3>
+                                <ul>
+                                    <li ng-repeat="pres in doc._source.presenters">
+                                        {{pres.name}} ({{pres.company}})
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="presenters">
-                            {{doc._source.venue}}
-                            <h3>Presenters:</h3>
-                            <ul>
-                                <li ng-repeat="pres in doc._source.presenters">
-                                    {{pres.name}} ({{pres.company}})
-                                </li>
-                            </ul>
-                        </div>
+                        <div style='clear:both;'><!--clear-->{{doc._source.description}}</div>
                     </div>
-                    <div style='clear:both;'><!--clear-->{{doc._source.description}}</div>
-
+                </li>
             </ul>
             <eui-simple-paging></eui-simple-paging>
         </div>

@@ -78,7 +78,7 @@ def get_event(eventid):
 
 
 def main():
-    subprocess.call("rm /vagrant/data_old/*;mv /vagrant/data/* /vagrant/data_old/", shell=True)    
+#    subprocess.call("rm /vagrant/data_old/*;mv /vagrant/data/* /vagrant/data_old/", shell=True)    
     for day in [11,12,13,14,15]:
         url = "http://schedule.sxsw.com/?day="+str(day)+"&conference=interactive"
         print url

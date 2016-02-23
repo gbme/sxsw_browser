@@ -13,13 +13,13 @@ case "$1" in
     echo "2"
     /sbin/start-stop-daemon --start --pidfile $PIDFILE \
         -b --make-pidfile \
-    --startas /bin/bash -- -c "exec $DAEMON $ARGS > /vagrant/logs/homeserver.log 2>&1"
+    --startas /bin/bash -- -c "exec $DAEMON $ARGS > /vagrant/logs/sxsw.log 2>&1"
     ;;
   restart)
   /sbin/start-stop-daemon --stop --retry 5 --quiet --pidfile $PIDFILE
    /sbin/start-stop-daemon --start --pidfile $PIDFILE \
       -b --make-pidfile \
-     --startas /bin/bash -- -c "exec $DAEMON $ARGS > /vagrant/logs/homeserver.log 2>&1"
+     --startas /bin/bash -- -c "exec $DAEMON $ARGS > /vagrant/logs/sxsw.log 2>&1"
   ;;
   stop)
     echo "Stopping server"
