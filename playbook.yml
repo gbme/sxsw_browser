@@ -26,10 +26,12 @@
     with_items:
       - requests
       - bottle
+      - passlib
       
   - file: path=/vagrant/data state=directory
   - file: path=/vagrant/logs state=directory
-  - file: src=/vagrant/initscript.sh dest=/etc/init.d/sxsw owner=root group=root state=link  
+  - file: path=/vagrant/auth state=directory
+  - file: src=/vagrant/initscript.sh dest=/etc/init.d/sxsw owner=root group=root state=link
   - shell: update-rc.d sxsw defaults
   - service: name=sxsw state=restarted
 

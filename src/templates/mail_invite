@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>GBME SXSW browser invite</title>
+  </head>
+  <body itemscope="" itemtype="http://schema.org/EmailMessage">&#13;
+&#13;
+<table class="body-wrap"><tr><td></td>&#13;
+		<td class="container" width="600">&#13;
+			<div class="content">&#13;
+				<table class="main" width="100%" cellpadding="0" cellspacing="0"><tr><td class="alert alert-warning">&#13;
+						</td>&#13;
+					</tr><tr><td class="content-wrap">&#13;
+							<table width="100%" cellpadding="0" cellspacing="0"><tr><td class="content-block">&#13;
+									</td>&#13;
+								</tr><tr><td class="content-block">&#13;
+										<a href="{{url}}" class="btn-primary">Activeer account</a>&#13;
+									</td>&#13;
+								</tr><tr></tr></table></td>&#13;
+					</tr></table></div>&#13;
+		</td>&#13;
+		<td></td>&#13;
+	</tr></table></body>
+</html>

@@ -1,0 +1,7 @@
+from _config import Struct as Section
+
+global_config = Section("global config")
+global_config.domain = "test.gbme.nl"
+global_config.app_root = "sxsw_store"
+global_config.static_root = "sxsw"
+global_config.protocol = "https://"

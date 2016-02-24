@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script>
+        function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++) {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == sParam) {
+                    return sParameterName[1];
+                }
+            }
+        }
+
+        function submit() {
+            console.log("submit")
+
+            conf = {
+                type: "POST",
+                url: "/sxsw_store/api/auth/new_user/",
+                data: JSON.stringify({
+//                    new_password: document.getElementById("passwd").value,
+                    "token": document.getElementById("token").value,
+                    "userid": document.getElementById("email").value,
+                    "handle": document.getElementById("handle").value,
+                }),
+                contentType: 'application/json',
+                success: function (response) {
+                    console.log(response)
+                    if (response.result == "ok") {
+                        console.log(response.data)
+                        if (response.Location) {
+                            window.location = response.Location
+                        }
+                    }
+                    else {
+                        alert(response.message)
+                    }
+                }
+                ,
+                dataType: 'json'
+            }
+            ;
+            console.log(conf)
+            $.ajax(conf);
+        }
+        $(document).ready(function () {
+                    token = getUrlParameter("token")
+                    email = getUrlParameter("email")
+                    $("#email").val(email)
+                    $("#token").val(token)
+
+                }
+        )
+    </script>
+
+
+</head>
+<body>
+Choose username : <input type="text" id="handle"/> <button onclick="submit()">Set username</button><br/>(hint, use first name to keep existing events)
+<input type="hidden" id="token"/>
+<input type="hidden" id="email"/>
+
+
+</body>
+</html>
