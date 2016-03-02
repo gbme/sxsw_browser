@@ -10,23 +10,6 @@
     <link rel="stylesheet" type="text/css" href="sxsw.css">
     <script>
         var elasticurl = location.protocol + '//' + location.hostname + "/elastic"
-        function setCookie(cname, cvalue, exdays) {
-            var d = new Date();
-            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-            var expires = "expires=" + d.toUTCString();
-            document.cookie = cname + "=" + cvalue + "; " + expires;
-        }
-
-        function getCookie(cname) {
-            var name = cname + "=";
-            var ca = document.cookie.split(';');
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') c = c.substring(1);
-                if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
-            }
-            return "";
-        }
 
         function set_userid(userid) {
             setCookie("sxswuserid", userid, 365)
@@ -75,12 +58,11 @@
                 .constant('euiHost', elasticurl);
         app.controller("t2", function ($scope, $http, $timeout) {
             $scope.change_user = function (e) {
-                console.log(e)
-                set_userid(e)
                 $scope.load_my_events();
 
             }
             $scope.myevents = [{_source: {eventid: "!", "title": "test"}}]
+
             $scope.check_user = function () {
                 console.log("check");
                 $http.get("/sxsw_store/api/auth/check")
@@ -91,19 +73,29 @@
                     // log error
                 });
 
-            },
-                    $scope.load_my_events = function () {
-                        $http.get(elasticurl + '/sxswevents/event/_search?q=attendees:' + $scope.user + '&sort=utime_start:asc&size=200')
-                                .success(function (data, status, headers, config) {
-                                    console.log(data);
-                                    $scope.myevents = data;
-                                }).error(function (data, status, headers, config) {
-                            // log error
-                        });
-                    }
+            }
+            $scope.load_my_events = function () {
+                $http.get(elasticurl + '/sxswevents/event/_search?q=attendees:' + $scope.user + '&sort=utime_start:asc&size=200')
+                        .success(function (data, status, headers, config) {
+                            console.log(data);
+                            $scope.timemap = {}
+                            for (_event in data.hits.hits) {
+                                event = data.hits.hits[_event]
+                                if (!$scope.timemap[event._source.utime_start]) {
+                                    $scope.timemap[event._source.utime_start] = []
+                                }
+                                event.d = new Date(event._source.utime_start)
+                                $scope.timemap[event._source.utime_start].push(event)
+                            }
+
+                            $scope.myevents = data;
+                        }).error(function (data, status, headers, config) {
+                    // log error
+                });
+            }
 
             $scope.$watch('user', $scope.change_user)
-            console.log("$scope.user", $scope.user)
+
             $scope.go = function (e) {
                 $scope.change_event_status(e, 'POST')
             }
@@ -115,13 +107,13 @@
                 $scope.invitemode = true
             }
 
-            $scope.show_confirmation_message= function(message){
+            $scope.show_confirmation_message = function (message) {
 
-                            $scope.confirmation = message;
-                            $timeout(function () {
-                                console.log("exit invite mode");
-                                $scope.confirmation = false;
-                            }, 2000)
+                $scope.confirmation = message;
+                $timeout(function () {
+                    console.log("exit invite mode");
+                    $scope.confirmation = false;
+                }, 2000)
 
 
             }
@@ -148,31 +140,6 @@
                         });
             }
 
-            /*
-             $scope.submit_login = function () {
-             console.log("submit login")
-             data = JSON.stringify({
-             userid: document.getElementById("email").value,
-             //                    "password": document.getElementById("passwd").value,
-             })
-             $http.post("/sxsw_store/api/auth/login/", data)
-             .then(function (data, status, headers, config) {
-             console.log(data);
-             if(!data.loggedin){
-             alert("Login failed")
-             }
-             if(data.message)
-             {
-             alert(data.message)
-             }
-             $scope.check_user();
-             //                            $scope.user = data.handle;
-             }, function (data, status, headers, config) {
-             // log error
-             });
-
-             }
-             */
 
             $scope.submit_forgot = function () {
                 console.log("submit forgot")
@@ -189,7 +156,6 @@
                                 $scope.show_confirmation_message("Done");
                             }
                             $scope.check_user();
-//                            $scope.user = data.handle;
                         }, function (data, status, headers, config) {
                             // log error
                         });
@@ -203,7 +169,6 @@
                         .then(function (data, status, headers, config) {
                             console.log(data);
                             $scope.check_user();
-//                            $scope.user = data.handle;
                         }, function (data, status, headers, config) {
                             // log error
                         });
@@ -238,12 +203,38 @@
                 }
                 http.send();
             }
+            $scope.weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+            $scope.days = {
+                11: {s: new Date(2016, 2, 11, 1, 0, 0, 0)},
+                12: {s: new Date(2016, 2, 12, 1, 0, 0, 0)},
+                13: {s: new Date(2016, 2, 13, 1, 0, 0, 0)},
+                14: {s: new Date(2016, 2, 14, 1, 0, 0, 0)},
+                15: {s: new Date(2016, 2, 15, 1, 0, 0, 0)}
+            }
+
+            $scope.slots = {
+                9.5: {"label": "9:30 AM"},
+                11: {"label": "11:00 AM"},
+                12.5: {"label": "12:30 PM"},
+                14: {"label": "14:00 PM"},
+                15.5: {"label": "15:30 PM"}
+            }
+
+            $scope.find_timeslot = function (t) {
+                console.log(t)
+                el = document.getElementById("searchdef")
+                console.log(el)
+                $scope.indexVM.query = ejs.MatchQuery('utime_start', t)
+                $scope.indexVM.refresh()
+            }
             $scope.check_user()
+            $scope.gbme_query = "ejs.MatchQuery('searchdata', 'google')"
+
         });
     </script>
 
 </head>
-<body ng-app="main" ng-controller="t2" eui-index="'sxswevents'" eui-enabled="true">
+<body eui-query="gbme_query" ng-app="main" ng-controller="t2" eui-index="'sxswevents'" eui-enabled="true">
 
 <div class="container-fluid">
 
@@ -268,17 +259,27 @@
 
             <h3>Schedule</h3>
             <label for="user">User: {{user}}</label> <a class="actionlink" ng-click="logout()">logout</a>
-            <ul>
-                <li class="event" ng-repeat="doc in myevents.hits.hits"
-                    eui-sort="ejs.Sort('utime_start').order('asc')" eui-enabled="true">
-                    <div ng-hide="doc._source.utime_start ==  myevents.hits.hits[$index-1]._source.utime_start"
-                         class="date_raw"><em>{{doc._source.date_raw}} {{doc._source.time_raw.split("-")[0]}}</em></div>
-                    <a target="sxswwindow" ng-href="http://schedule.sxsw.com/events/{{doc._source.eventid}}">{{doc._source.title}}</a>&nbsp;<a
-                        class="actionlink" ng-click="nogo(doc)">remove</a>
-                </li>
-                <li class="event" ng-hide="myevents.hits.hits.length">No Events in schedule</li>
+            <div class="schedulelist" ng-repeat="(day,o) in days">
+                <h2>{{weekdays[o.s.getDay()] }}, {{o.s.getDate()}} March</h2>
+                <div class="schedulelist" ng-repeat="(slot,slot_object) in slots">
+                    <h3>{{slot_object.label}}</h3>
+                    <!--                        {{o.s.getTime()}}<b>
+                                            {{o.s.getTime() + slot*3600*1000}} == {{doc.d.getTime()}}</b><br/>{{o.s.getTime() + slot*3600*1000 == doc.d.getTime()}}
+                                            {{((o.s.getTime() + slot*3600*1000 )- doc.d.getTime()) / 3600000}}
+                                                {{doc._source.date_raw}}{{doc._source.time_raw}}
+                    -->
+                    <ul ng-if="timemap[o.s.getTime() + slot*3600*1000]">
+                        <li class="event" ng-repeat="event in timemap[o.s.getTime() + slot*3600*1000]">
+                            <a ng-href="http://schedule.sxsw.com/events/{{event._source.eventid}}">{{event._source.title}}</a>
+                        </li>
+                    </ul>
+                    <span ng-if="!timemap[o.s.getTime() + slot*3600*1000]">no events, <a class="actionlink"
+                                                                                         ng-click="find_timeslot(o.s.getTime() + slot*3600*1000)">search
+                        in this timeslot</a></span>
+                </div>
+            </div>
 
-            </ul>
+
         </div>
         <div class="col-xs-3 sidebar">
             <h3>Search</h3>
@@ -315,7 +316,7 @@
         <div class="col-xs-6 col-xs-offset-3 main">
             <h1>Results ({{indexVM.results.hits.total}})</h1>
             <ul class="mainlist">
-                <li class="event" ng-repeat="doc in indexVM.results.hits.hits"
+                <li id="searchdef" class="event" ng-repeat="doc in indexVM.results.hits.hits"
                     eui-sort="ejs.Sort('utime_start').order('asc')" eui-enabled="true">
                     <h2 ng-hide="doc._source.utime_start ==  indexVM.results.hits.hits[$index-1]._source.utime_start"><a
                             target="sxswwindow" ng-href="">{{doc._source.date_raw}} {{doc._source.time_raw}}</a>
@@ -332,7 +333,10 @@
                                 <div class="date_raw"><em>Date: </em>{{doc._source.date_raw}} {{doc._source.time_raw}}
                                 </div>
                                 <div class="date_raw"><em>Track: </em>{{doc._source.track}}</div>
-                                <div class="date_raw"><em>Format: </em>{{doc._source.format}} {{doc._source.rsvp=="YES"?" (RSVP)":""}}</div>
+                                <div class="date_raw"><em>Format: </em>{{doc._source.format}}
+                                    {{doc._source.rsvp=="YES"?"
+                                    (RSVP)":""}}
+                                </div>
                                 <div class="date_raw"><em>Level: </em>{{doc._source.level}}</div>
                                 <div class="date_raw"><em>Venue: </em>{{doc._source.venue_name}}
                                     {{doc._source.detail_room}}

@@ -7,6 +7,22 @@
     background-color: lightblue;
 }
 
+.schedulelist h2 {
+    width: 100%;
+    font-size: 15px;
+    margin-top: 2px;
+    margin-bottom: 0px;
+    background-color: lightblue;
+}
+
+.schedulelist h3 {
+    width: 100%;
+    font-size: 15px;
+    margin-top: 2px;
+    margin-bottom: 0px;
+}
+
+
 ul {
     -webkit-padding-start:0px
 }
@@ -24,7 +40,7 @@ ul {
     bottom: 0;
     z-index: 1000;
     display: block;
-    padding: 20px;
+    padding: 10px;
     padding-top:0px;
     overflow-x: hidden;
     overflow-y: auto;
@@ -93,3 +109,9 @@ div.presenters {
 .attendees p {
     display: inline;
 }
+
+.schedulelist {
+    width:100%
+
+}
+
