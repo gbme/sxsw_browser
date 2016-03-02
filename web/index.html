@@ -98,6 +98,7 @@
 
             $scope.go = function (e) {
                 $scope.change_event_status(e, 'POST')
+                $scope.searchmode = false
             }
 
             $scope.nogo = function (e) {
@@ -224,6 +225,7 @@
                 console.log(t)
                 el = document.getElementById("searchdef")
                 console.log(el)
+                $scope.searchmode = true
                 $scope.indexVM.query = ejs.MatchQuery('utime_start', t)
                 $scope.indexVM.refresh()
             }
@@ -234,86 +236,12 @@
     </script>
 
 </head>
-<body eui-query="gbme_query" ng-app="main" ng-controller="t2" eui-index="'sxswevents'" eui-enabled="true">
+<body ng-app="main" ng-controller="t2" eui-index="'sxswevents'" eui-enabled="true">
 
 <div class="container-fluid">
 
     <div class="row">
-        <div ng-hide="user" class="col-xs-3 col-xs-offset-9 sidebar">
-            <h4>Log in to add sessions to your schedule</h4>
-            <label for="email">Email: <input type="text" id="forgot_email"/></label>
-            <button ng-click="submit_forgot()">Log in</button>
-        </div>
-        <div ng-show="!confirmation && user && invitemode" class="col-xs-3 col-xs-offset-9 sidebar">
-            <h4>Email adress to send the invite to:<br/></h4>
-            <label for="email">Email:<input type="text" id="new_email"/></label>
-            <button ng-click="submit_invite()">Invite</button>
-        </div>
-        <div ng-show="confirmation" class="col-xs-3 col-xs-offset-9 sidebar">
-            <h4>{{confirmation}}</h4>
-        </div>
-        <div ng-show="!confirmation && user && !invitemode" class="col-xs-3 col-xs-offset-9 sidebar">
-            <h3>
-                <button ng-click="show_invite()">Invite a new user...</button>
-            </h3>
-
-            <h3>Schedule</h3>
-            <label for="user">User: {{user}}</label> <a class="actionlink" ng-click="logout()">logout</a>
-            <div class="schedulelist" ng-repeat="(day,o) in days">
-                <h2>{{weekdays[o.s.getDay()] }}, {{o.s.getDate()}} March</h2>
-                <div class="schedulelist" ng-repeat="(slot,slot_object) in slots">
-                    <h3>{{slot_object.label}}</h3>
-                    <!--                        {{o.s.getTime()}}<b>
-                                            {{o.s.getTime() + slot*3600*1000}} == {{doc.d.getTime()}}</b><br/>{{o.s.getTime() + slot*3600*1000 == doc.d.getTime()}}
-                                            {{((o.s.getTime() + slot*3600*1000 )- doc.d.getTime()) / 3600000}}
-                                                {{doc._source.date_raw}}{{doc._source.time_raw}}
-                    -->
-                    <ul ng-if="timemap[o.s.getTime() + slot*3600*1000]">
-                        <li class="event" ng-repeat="event in timemap[o.s.getTime() + slot*3600*1000]">
-                            <a ng-href="http://schedule.sxsw.com/events/{{event._source.eventid}}">{{event._source.title}}</a>
-                        </li>
-                    </ul>
-                    <span ng-if="!timemap[o.s.getTime() + slot*3600*1000]">no events, <a class="actionlink"
-                                                                                         ng-click="find_timeslot(o.s.getTime() + slot*3600*1000)">search
-                        in this timeslot</a></span>
-                </div>
-            </div>
-
-
-        </div>
-        <div class="col-xs-3 sidebar">
-            <h3>Search</h3>
-            <eui-searchbox field="'searchdata'"></eui-searchbox> <!-- ACTION: change to field to search on -->
-            <h3>Who's attending</h3>
-            <eui-singleselect field="'attendees'" size="30"></eui-singleselect>
-            <!-- ACTION: change to field to use as facet -->
-            <h3>Status</h3>
-            <eui-checklist field="'status'" size="10"></eui-checklist> <!-- ACTION: change to field to use as facet -->
-            <h3>RSVP</h3>
-            <eui-checklist field="'rsvp'" size="10"></eui-checklist> <!-- ACTION: change to field to use as facet -->
-            <h3>Date</h3>
-            <eui-checklist field="'date_raw'" size="10"></eui-checklist>
-            <!-- ACTION: change to field to use as facet -->
-            <h3>Format</h3>
-            <eui-checklist field="'format'" size="30"></eui-checklist> <!-- ACTION: change to field to use as facet -->
-            <h3>Venue</h3>
-            <eui-checklist field="'venue_name'" size="30"></eui-checklist>
-            <!-- ACTION: change to field to use as facet -->
-            <h3>Track</h3>
-            <eui-checklist field="'track'" size="30"></eui-checklist> <!-- ACTION: change to field to use as facet -->
-            <h3>Eventtype</h3>
-            <eui-checklist field="'eventtype'" size="30"></eui-checklist>
-            <!-- ACTION: change to field to use as facet -->
-            <h3>Level</h3>
-            <eui-checklist field="'level'" size="30"></eui-checklist> <!-- ACTION: change to field to use as facet -->
-            <h3>Tags</h3>
-            <eui-checklist field="'tags'" size="30"></eui-checklist> <!-- ACTION: change to field to use as facet -->
-            <h3>Results Per Page</h3>
-            <select ng-model="indexVM.pageSize">
-                <option ng-repeat="item in [10, 20, 50, 100]">{{item}}</option>
-            </select>
-        </div>
-        <div class="col-xs-6 col-xs-offset-3 main">
+        <div id="main" ng-class="{'col-xs-12':searchmode,'hidden-xs':!searchmode}" class="col-sm-6 col-sm-offset-3 main">
             <h1>Results ({{indexVM.results.hits.total}})</h1>
             <ul class="mainlist">
                 <li id="searchdef" class="event" ng-repeat="doc in indexVM.results.hits.hits"
@@ -359,6 +287,75 @@
                 </li>
             </ul>
             <eui-simple-paging></eui-simple-paging>
+        </div>
+        <div ng-class="{'hidden-xs':searchmode,'col-xs-12':!searchmode}" class="col-sm-3 col-sm-offset-9 sidebar">
+            <div ng-hide="user">
+                <h4>Log in to add sessions to your schedule</h4>
+                <label for="email">Email: <input type="text" id="forgot_email"/></label>
+                <button ng-click="submit_forgot()">Log in</button>
+            </div>
+            <div ng-show="!confirmation && user && invitemode">
+                <h4>Email adress to send the invite to:<br/></h4>
+                <label for="email">Email:<input type="text" id="new_email"/></label>
+                <button ng-click="submit_invite()">Invite</button>
+            </div>
+            <div ng-show="confirmation" class="col-xs-3 col-xs-offset-9 sidebar">
+                <h4>{{confirmation}}</h4>
+            </div>
+            <div ng-show="!confirmation && user && !invitemode">
+
+                <h3>Schedule</h3>
+                <label for="user">User: {{user}}</label> <a class="actionlink" ng-click="logout()">logout</a>&nbsp;
+                    <button ng-click="show_invite()">Invite a new user...</button>
+                <div class="schedulelist" ng-repeat="(day,o) in days">
+                    <h2>{{weekdays[o.s.getDay()] }}, {{o.s.getDate()}} March</h2>
+                    <div class="schedulelist" ng-repeat="(slot,slot_object) in slots">
+                        <h3>{{slot_object.label}} <span ng-if="timemap[o.s.getTime() + slot*3600*1000]">{{timemap[o.s.getTime() + slot*3600*1000].length}} events:</span>
+                            <a ng-click="find_timeslot(o.s.getTime() + slot*3600*1000)"
+                               ng-if="!timemap[o.s.getTime() + slot*3600*1000]">no events, search in this timeslot</a>
+                        </h3>
+                        <ul ng-if="timemap[o.s.getTime() + slot*3600*1000]">
+                            <li class="event" ng-repeat="event in timemap[o.s.getTime() + slot*3600*1000]">
+                                <a ng-href="http://schedule.sxsw.com/events/{{event._source.eventid}}">{{event._source.title}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="hidden-xs col-sm-3 sidebar">
+            <h3>Search</h3>
+            <eui-searchbox field="'searchdata'"></eui-searchbox> <!-- ACTION: change to field to search on -->
+            <h3>Who's attending</h3>
+            <eui-singleselect field="'attendees'" size="30"></eui-singleselect>
+            <!-- ACTION: change to field to use as facet -->
+            <h3>Status</h3>
+            <eui-checklist field="'status'" size="10"></eui-checklist> <!-- ACTION: change to field to use as facet -->
+            <h3>RSVP</h3>
+            <eui-checklist field="'rsvp'" size="10"></eui-checklist> <!-- ACTION: change to field to use as facet -->
+            <h3>Date</h3>
+            <eui-checklist field="'date_raw'" size="10"></eui-checklist>
+            <!-- ACTION: change to field to use as facet -->
+            <h3>Format</h3>
+            <eui-checklist field="'format'" size="30"></eui-checklist> <!-- ACTION: change to field to use as facet -->
+            <h3>Venue</h3>
+            <eui-checklist field="'venue_name'" size="30"></eui-checklist>
+            <!-- ACTION: change to field to use as facet -->
+            <h3>Track</h3>
+            <eui-checklist field="'track'" size="30"></eui-checklist> <!-- ACTION: change to field to use as facet -->
+            <h3>Eventtype</h3>
+            <eui-checklist field="'eventtype'" size="30"></eui-checklist>
+            <!-- ACTION: change to field to use as facet -->
+            <h3>Level</h3>
+            <eui-checklist field="'level'" size="30"></eui-checklist> <!-- ACTION: change to field to use as facet -->
+            <h3>Tags</h3>
+            <eui-checklist field="'tags'" size="30"></eui-checklist> <!-- ACTION: change to field to use as facet -->
+            <h3>Results Per Page</h3>
+            <select ng-model="indexVM.pageSize">
+                <option ng-repeat="item in [10, 20, 50, 100]">{{item}}</option>
+            </select>
         </div>
 
     </div>

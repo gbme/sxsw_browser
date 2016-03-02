@@ -18,8 +18,8 @@
 .schedulelist h3 {
     width: 100%;
     font-size: 15px;
-    margin-top: 2px;
-    margin-bottom: 0px;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 
@@ -52,6 +52,10 @@ li.event {
     width: 100%;
     position: relative;
     padding-bottom: 10px;
+}
+
+.schedulelist li.event{
+    padding-bottom: 0px;
 }
 
 div.licontainer{
