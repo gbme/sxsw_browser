@@ -74,6 +74,14 @@ a.actionlink{
     font-size: 12px;
 
 }
+
+.navheader {
+    width:100%
+
+}
+
+
+
 button {
     font-size: 15px;
 
@@ -119,3 +127,32 @@ div.presenters {
 
 }
 
+.navheader {
+    height:40px;
+}
+.navlink{
+    font-size: 25px;
+    margin-top: 0px;
+    margin-bottom: 5px;
+    text-align: right;
+}
+
+
+.navtitle {
+    font-size: 25px;
+    text-align:center;
+    width:60%;
+
+}
+
+.navdiv {
+    float:left;
+}
+
+.navdiv.button {
+    width:20%;
+}
+
+.right {
+    text-align: right;
+}

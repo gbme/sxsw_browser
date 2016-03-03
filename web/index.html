@@ -2,8 +2,10 @@
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <title>SXSW Panel Browser</title>
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
+    <!--link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/-->
+    <!--script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script-->
+    <link rel="stylesheet" href="vendor/bootstrap.min.css"/>
+    <script src="vendor/angular.min.js"></script>
     <script src="lib/elasticsearch.angular.js"></script>
     <script src="lib/elastic.js"></script>
     <script src="dist/elasticui.js"></script>
@@ -233,6 +235,7 @@
             $scope.gbme_query = "ejs.MatchQuery('searchdata', 'google')"
             $scope.filtermode = false;
             $scope.searchmode = false;
+
         });
     </script>
 
@@ -242,8 +245,19 @@
 <div class="container-fluid">
 
     <div class="row">
-        <div id="main" ng-class="{'col-xs-12':searchmode,'hidden-xs':!searchmode}" class="col-sm-6 col-sm-offset-3 main">
-            <h1>Results ({{indexVM.results.hits.total}}) <a ng-click="filtermode=true;searchmode=false">filters</a></h1>
+        <div class="row">
+        </div>
+        <div id="main" ng-class="{'col-xs-12':searchmode,'hidden-xs':!searchmode}"
+             class="col-sm-6 col-sm-offset-3 main">
+            <div class="navheader">
+                <div class="navdiv">
+                    <a class="visible-xs navlink navbacklink" ng-click="filtermode=false;searchmode=false">< back</a>
+                </div>
+                <div class="navdiv navtitle">Results ({{indexVM.results.hits.total}})</div>
+                <div class="navdiv">
+                    <a class="visible-xs  navlink navlinkextra" ng-click="filtermode=true;searchmode=false">filters</a>
+                </div>
+            </div>
             <ul class="mainlist">
                 <li id="searchdef" class="event" ng-repeat="doc in indexVM.results.hits.hits"
                     eui-sort="ejs.Sort('utime_start').order('asc')" eui-enabled="true">
@@ -289,7 +303,17 @@
             </ul>
             <eui-simple-paging></eui-simple-paging>
         </div>
-        <div ng-class="{'hidden-xs':searchmode || filtermode,'col-xs-12':!searchmode}" class="col-sm-3 col-sm-offset-9 sidebar">
+        <div ng-class="{'hidden-xs':searchmode || filtermode,'col-xs-12':!searchmode}"
+             class="col-sm-3 col-sm-offset-9 sidebar">
+            <div class="navheader">
+                <div class="navdiv button left">&nbsp;
+                </div>
+                <div class="navdiv navtitle">Schedule</div>
+                <div class="navdiv button right">
+                    <a class="visible-xs  navlink" ng-click="filtermode=true;searchmode=false">filters</a>
+                </div>
+            </div>
+
             <div ng-hide="user">
                 <h4>Log in to add sessions to your schedule</h4>
                 <label for="email">Email: <input type="text" id="forgot_email"/></label>
@@ -304,10 +328,8 @@
                 <h4>{{confirmation}}</h4>
             </div>
             <div ng-show="!confirmation && user && !invitemode">
-
-                <h3>Schedule</h3>
                 <label for="user">User: {{user}}</label> <a class="actionlink" ng-click="logout()">logout</a>&nbsp;
-                    <button ng-click="show_invite()">Invite a new user...</button>
+                <button ng-click="show_invite()">Invite a new user...</button>
                 <div class="schedulelist" ng-repeat="(day,o) in days">
                     <h2>{{weekdays[o.s.getDay()] }}, {{o.s.getDate()}} March</h2>
                     <div class="schedulelist" ng-repeat="(slot,slot_object) in slots">
@@ -327,8 +349,19 @@
             </div>
         </div>
         <div ng-class="{'hidden-xs':!filtermode,'col-xs-12':filtermode}" class="col-sm-3 sidebar">
-            <h3>Search <a ng-click="filtermode=false;searchmode=true">back</a></h3>
-            <eui-searchbox field="'searchdata'"></eui-searchbox> <!-- ACTION: change to field to search on -->
+            <div class="navheader">
+                <div class="navdiv  button">
+                    <a class="visible-xs navlink navbacklink" ng-click="filtermode=false;searchmode=false">< Back</a>
+                </div>
+                <div class="navdiv navtitle">Search / Filter</div>
+                <div class="navdiv button">
+                    <a class="visible-xs navlink navbacklink" ng-click="filtermode=false;searchmode=true">results</a>
+                </div>
+            </div>
+
+            <h2>Search:({{indexVM.results.hits.total}})</h2>
+            <eui-searchbox field="'searchdata'"></eui-searchbox><!-- ACTION: change to field to search on -->
+            <h2>Filters:</h2>
             <h3>Who's attending</h3>
             <eui-singleselect field="'attendees'" size="30"></eui-singleselect>
             <!-- ACTION: change to field to use as facet -->
