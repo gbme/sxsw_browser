@@ -55,7 +55,6 @@
             }
         }();
 
-
         var app = angular
                 .module('main', ['elasticui'])
                 .constant('euiHost', elasticurl);
@@ -65,6 +64,15 @@
 
             }
             $scope.myevents = [{_source: {eventid: "!", "title": "test"}}]
+
+            $scope.reset = function (refresh) {
+                while (filter =$scope. indexVM.filters.ejsObjects[0]) {
+                    $scope.indexVM.filters.remove(filter)
+                }
+                if(refresh)$scope.indexVM.refresh()
+            }
+
+
 
             $scope.check_user = function () {
                 console.log("check");
@@ -225,6 +233,7 @@
             }
 
             $scope.find_timeslot = function (t) {
+                $scope.reset(false)
                 console.log(t)
                 el = document.getElementById("searchdef")
                 console.log(el)
@@ -236,7 +245,6 @@
             $scope.gbme_query = "ejs.MatchQuery('searchdata', 'google')"
             $scope.filtermode = false;
             $scope.searchmode = false;
-
         });
     </script>
 
