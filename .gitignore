@@ -6,3 +6,8 @@ logs/*
 *.pyc
 *~
 sxsw.db
+sxsw2.db
+auth/*
+data_old/*
+auth
+data_old
