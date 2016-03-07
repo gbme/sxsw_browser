@@ -523,7 +523,7 @@ def auth_forgot():
         userid = data.get("userid")
         if userid:
             logger.debug("userid:"+str(userid))
-            c.execute("SELECT * from sxsw_users WHERE email=? AND active=1",(userid,))
+            c.execute("SELECT * from sxsw_users WHERE email=? AND active=1",(userid.lower(),))
             res = c.fetchone()
             logger.debug(res)
             if res:
