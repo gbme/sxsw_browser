@@ -167,6 +167,7 @@
                             else {
                                 $scope.show_confirmation_message("Done");
                             }
+                            document.getElementById("forgot_email").value = ""
                             $scope.check_user();
                         }, function (data, status, headers, config) {
                             // log error
@@ -240,6 +241,12 @@
                 $scope.searchmode = true
                 $scope.indexVM.query = ejs.MatchQuery('utime_start', t)
                 $scope.indexVM.refresh()
+            }
+            $scope.find_one_event = function (eventid) {
+                console.log("find_one_event",eventid)
+                $scope.indexVM.query = ejs.MatchQuery('eventid', eventid)
+                $scope.indexVM.refresh()
+
             }
             $scope.check_user()
             $scope.gbme_query = "ejs.MatchQuery('searchdata', 'google')"
@@ -323,7 +330,7 @@
                 </div>
             </div>
 
-            <div ng-hide="user">
+            <div ng-hide="user || confirmation">
                 <h4>Log in to add sessions to your schedule</h4>
                 <label for="email">Email: <input type="text" id="forgot_email"/></label>
                 <button ng-click="submit_forgot()">Log in</button>
@@ -333,7 +340,7 @@
                 <label for="email">Email:<input type="text" id="new_email"/></label>
                 <button ng-click="submit_invite()">Invite</button>
             </div>
-            <div ng-show="confirmation" class="col-xs-3 col-xs-offset-9 sidebar">
+            <div ng-show="confirmation" >
                 <h4>{{confirmation}}</h4>
             </div>
             <div ng-show="!confirmation && user && !invitemode">
@@ -348,7 +355,7 @@
                         </h3>
                         <ul ng-if="timemap[o.s.getTime() + slot*3600*1000]">
                             <li class="event" ng-repeat="event in timemap[o.s.getTime() + slot*3600*1000]">
-                                <a ng-href="http://schedule.sxsw.com/events/{{event._source.eventid}}">{{event._source.title}}</a>
+                                <a ng-click="find_one_event(event._source.eventid)">{{event._source.title}}</a>
                             </li>
                         </ul>
                     </div>

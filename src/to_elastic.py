@@ -33,8 +33,12 @@ class DecimalEncoder(json.JSONEncoder):
 
 
 def reset():
-    logger.debug("delete:" + "elastic/messages")
+    logger.debug("delete:" + "sxswevents")
     d = requests.delete(elastic_url + "/sxswevents/", headers=headers)
+    logger.debug(d.text)
+    logger.debug("result for elastic delete:" + str(d.status_code))
+    logger.debug("delete:" + "events")
+    d = requests.delete(elastic_url + "/events/", headers=headers)
     logger.debug(d.text)
     logger.debug("result for elastic delete:" + str(d.status_code))
     data = {
@@ -46,6 +50,7 @@ def reset():
                         "status": {"type": "string"},
                         "title": {"type": "string"},
                         "rsvp": {"type": "string"},
+                        "eventid": {"type": "string", "analyzer": "keyword"},
                         "venue_name": {"type": "string", "analyzer": "keyword"},
                         "description": {"type": "string"},
                         "event-image": {"type": "string"},
