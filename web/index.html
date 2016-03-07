@@ -63,7 +63,7 @@
                 $scope.load_my_events();
 
             }
-            $scope.myevents = [{_source: {eventid: "!", "title": "test"}}]
+            $scope.myevents=false;
 
             $scope.reset = function (refresh) {
                 while (filter = $scope.indexVM.filters.ejsObjects[0]) {
@@ -230,7 +230,7 @@
                 {"h": 14, "label": "14:00 PM"},
                 {"h": 15.5, "label": "15:30 PM"}
             ]
-        
+
 
         $scope.find_timeslot = function (t) {
             $scope.reset(false)
@@ -345,11 +345,10 @@
                 <h4>{{confirmation}}</h4>
             </div>
             <div ng-show="!confirmation && user && !invitemode">
-                <label for="user">User: {{user}}</label> <a class="actionlink" ng-click="logout()">logout</a>&nbsp;
                 <div class="schedulelist" ng-repeat="(day,o) in days">
-                    <h2 style="background-color:white;font-weight: bold;padding-top:5px;padding-bottom:5px">
+                    <h2>
                         {{weekdays[o.s.getDay()] }}, {{o.s.getDate()}} March</h2>
-                    <div class="schedulelist" ng-repeat="slot_object in slots">
+                    <div ng-repeat="slot_object in slots">
                         <!-- <h3>{{slot_object.label}} <span ng-if="timemap[o.s.getTime() + slot*3600*1000]">{{timemap[o.s.getTime() + slot*3600*1000].length}} events:</span>
                              <a ng-click="find_timeslot(o.s.getTime() + slot*3600*1000)"
                                 ng-if="!timemap[o.s.getTime() + slot*3600*1000]">no events, search in this timeslot</a>
@@ -378,6 +377,7 @@
                         </div>
                     </div>
                 </div>
+                <label for="user">User: {{user}}</label> <a class="actionlink" ng-click="logout()">logout</a>&nbsp;
                 <button ng-click="show_invite()">Invite a new user...</button>
 
 
