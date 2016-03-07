@@ -162,6 +162,24 @@ input[type=checkbox] {
     float:left;
 }
 
+.myeventwrapper {
+    padding-top:5px;
+    padding-bottom: 5px;
+}
+.myeventwrapper a {
+    font-size:18px;
+}
+
+.myeventslot{
+    width:20%;
+    float:left;
+    font-size:12px;
+    padding-top:10px;
+    padding-bottom: 5px;
+}
+
+.noevent {color:red}
+
 .navdiv.button {
     width:20%;
 }

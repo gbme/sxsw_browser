@@ -66,12 +66,11 @@
             $scope.myevents = [{_source: {eventid: "!", "title": "test"}}]
 
             $scope.reset = function (refresh) {
-                while (filter =$scope. indexVM.filters.ejsObjects[0]) {
+                while (filter = $scope.indexVM.filters.ejsObjects[0]) {
                     $scope.indexVM.filters.remove(filter)
                 }
-                if(refresh)$scope.indexVM.refresh()
+                if (refresh)$scope.indexVM.refresh()
             }
-
 
 
             $scope.check_user = function () {
@@ -224,35 +223,37 @@
                 14: {s: new Date(2016, 2, 14, 1, 0, 0, 0)},
             }
 
-            $scope.slots = {
-                9.5: {"label": "9:30 AM"},
-                11: {"label": "11:00 AM"},
-                12.5: {"label": "12:30 PM"},
-                14: {"label": "14:00 PM"},
-                15.5: {"label": "15:30 PM"}
-            }
+            $scope.slots = [
+                {"h": 9.5, "label": "9:30 AM"},
+                {"h": 11, "label": "11:00 AM"},
+                {"h": 12.5, "label": "12:30 PM"},
+                {"h": 14, "label": "14:00 PM"},
+                {"h": 15.5, "label": "15:30 PM"}
+            ]
+        
 
-            $scope.find_timeslot = function (t) {
-                $scope.reset(false)
-                console.log(t)
-                el = document.getElementById("searchdef")
-                console.log(el)
-                $scope.searchmode = true
-                $scope.indexVM.query = ejs.MatchQuery('utime_start', t)
-                $scope.indexVM.refresh()
-            }
-            $scope.find_one_event = function (eventid) {
-                console.log("find_one_event",eventid)
-                $scope.indexVM.query = ejs.MatchQuery('eventid', eventid)
-                $scope.indexVM.refresh();
-                $scope.searchmode = true;
+        $scope.find_timeslot = function (t) {
+            $scope.reset(false)
+            console.log(t)
+            el = document.getElementById("searchdef")
+            console.log(el)
+            $scope.searchmode = true
+            $scope.indexVM.query = ejs.MatchQuery('utime_start', t)
+            $scope.indexVM.refresh()
+        }
+        $scope.find_one_event = function (eventid) {
+            console.log("find_one_event", eventid)
+            $scope.indexVM.query = ejs.MatchQuery('eventid', eventid)
+            $scope.indexVM.refresh();
+            $scope.searchmode = true;
 
-            }
-            $scope.check_user()
-            $scope.gbme_query = "ejs.MatchQuery('searchdata', 'google')"
-            $scope.filtermode = false;
-            $scope.searchmode = false;
-        });
+        }
+        $scope.check_user()
+        $scope.gbme_query = "ejs.MatchQuery('searchdata', 'google')"
+        $scope.filtermode = false;
+        $scope.searchmode = false;
+        })
+        ;
     </script>
 
 </head>
@@ -340,34 +341,40 @@
                 <label for="email">Email:<input type="text" id="new_email"/></label>
                 <button ng-click="submit_invite()">Invite</button>
             </div>
-            <div ng-show="confirmation" >
+            <div ng-show="confirmation">
                 <h4>{{confirmation}}</h4>
             </div>
             <div ng-show="!confirmation && user && !invitemode">
                 <label for="user">User: {{user}}</label> <a class="actionlink" ng-click="logout()">logout</a>&nbsp;
                 <div class="schedulelist" ng-repeat="(day,o) in days">
-                    <h2 style="background-color:white;font-weight: bold;padding-top:5px;padding-bottom:5px">{{weekdays[o.s.getDay()] }}, {{o.s.getDate()}} March</h2>
-                    <div class="schedulelist" ng-repeat="(slot,slot_object) in slots">
-                       <!-- <h3>{{slot_object.label}} <span ng-if="timemap[o.s.getTime() + slot*3600*1000]">{{timemap[o.s.getTime() + slot*3600*1000].length}} events:</span>
-                            <a ng-click="find_timeslot(o.s.getTime() + slot*3600*1000)"
-                               ng-if="!timemap[o.s.getTime() + slot*3600*1000]">no events, search in this timeslot</a>
-                        </h3>
-                        <ul ng-if="timemap[o.s.getTime() + slot*3600*1000]">
-                            <li class="event" ng-repeat="event in timemap[o.s.getTime() + slot*3600*1000]">
-                                <a ng-click="find_one_event(event._source.eventid)">{{event._source.title}}</a>
-                            </li>
-                        </ul> -->
+                    <h2 style="background-color:white;font-weight: bold;padding-top:5px;padding-bottom:5px">
+                        {{weekdays[o.s.getDay()] }}, {{o.s.getDate()}} March</h2>
+                    <div class="schedulelist" ng-repeat="slot_object in slots">
+                        <!-- <h3>{{slot_object.label}} <span ng-if="timemap[o.s.getTime() + slot*3600*1000]">{{timemap[o.s.getTime() + slot*3600*1000].length}} events:</span>
+                             <a ng-click="find_timeslot(o.s.getTime() + slot*3600*1000)"
+                                ng-if="!timemap[o.s.getTime() + slot*3600*1000]">no events, search in this timeslot</a>
+                         </h3>
+                         <ul ng-if="timemap[o.s.getTime() + slot*3600*1000]">
+                             <li class="event" ng-repeat="event in timemap[o.s.getTime() + slot*3600*1000]">
+                                 <a ng-click="find_one_event(event._source.eventid)">{{event._source.title}}</a>
+                             </li>
+                         </ul> -->
                         <div class="width:100%">
-                        <div style="width:20%;float:left;padding-top:5px;padding-bottom: 5px;">{{slot_object.label}}</div>
-                            <div style="width:80%;float:left;" >
-                                <div ng-if="!timemap[o.s.getTime() + slot*3600*1000]" style="padding-top:5px;padding-bottom: 5px;">
-                                    <a ng-click="find_timeslot(o.s.getTime() + slot*3600*1000)" style="color:red">No events, search in this timeslot</a>
-                                    </div>
-                                <div ng-if="timemap[o.s.getTime() + slot*3600*1000]" style="padding-top:5px;padding-bottom: 5px;" ng-repeat="event in timemap[o.s.getTime() + slot*3600*1000]">
-                                <a  style="cursor: pointer" ng-click="find_one_event(event._source.eventid)">{{event._source.title}}</a>
-                                    </div>
+                            <div class="myeventslot">{{slot_object.label}}</div>
+                            <div style="width:80%;float:left;">
+                                <div class="myeventwrapper"
+                                     ng-if="myevents && (!timemap[o.s.getTime() + slot_object.h*3600*1000])">
+                                    <a class="noevent"
+                                       ng-click="find_timeslot(o.s.getTime() + slot_object.h*3600*1000)">No events,
+                                        search in this timeslot</a>
+                                </div>
+                                <div class="myeventwrapper" ng-if="timemap[o.s.getTime() + slot_object.h*3600*1000]"
+                                     style="padding-top:5px;padding-bottom: 5px;"
+                                     ng-repeat="event in timemap[o.s.getTime() + slot_object.h*3600*1000]">
+                                    <a style="cursor: pointer" ng-click="find_one_event(event._source.eventid)">{{event._source.title}}</a>
+                                </div>
                             </div>
-                             <br style="clear: left;" />
+                            <br style="clear: left;"/>
                         </div>
                     </div>
                 </div>
