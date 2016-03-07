@@ -222,7 +222,6 @@
                 12: {s: new Date(2016, 2, 12, 1, 0, 0, 0)},
                 13: {s: new Date(2016, 2, 13, 1, 0, 0, 0)},
                 14: {s: new Date(2016, 2, 14, 1, 0, 0, 0)},
-                15: {s: new Date(2016, 2, 15, 1, 0, 0, 0)}
             }
 
             $scope.slots = {
@@ -245,7 +244,8 @@
             $scope.find_one_event = function (eventid) {
                 console.log("find_one_event",eventid)
                 $scope.indexVM.query = ejs.MatchQuery('eventid', eventid)
-                $scope.indexVM.refresh()
+                $scope.indexVM.refresh();
+                $scope.searchmode = true;
 
             }
             $scope.check_user()
@@ -267,11 +267,11 @@
              class="col-sm-6 col-sm-offset-3 main">
             <div class="navheader">
                 <div class="navdiv">
-                    <a class="visible-xs navlink navbacklink" ng-click="filtermode=false;searchmode=false">< back</a>
+                    <a class="visible-xs navlink navbacklink" ng-click="filtermode=false;searchmode=false">< Back</a>
                 </div>
                 <div class="navdiv navtitle">Results ({{indexVM.results.hits.total}})</div>
                 <div class="navdiv">
-                    <a class="visible-xs  navlink navlinkextra" ng-click="filtermode=true;searchmode=false">filters</a>
+                    <a class="visible-xs  navlink navlinkextra" ng-click="filtermode=true;searchmode=false">Filters</a>
                 </div>
             </div>
             <ul class="mainlist">
@@ -326,7 +326,7 @@
                 </div>
                 <div class="navdiv navtitle">Schedule</div>
                 <div class="navdiv button right">
-                    <a class="visible-xs  navlink" ng-click="filtermode=true;searchmode=false">filters</a>
+                    <a class="visible-xs  navlink" ng-click="filtermode=true;searchmode=false">Filters</a>
                 </div>
             </div>
 
@@ -345,11 +345,10 @@
             </div>
             <div ng-show="!confirmation && user && !invitemode">
                 <label for="user">User: {{user}}</label> <a class="actionlink" ng-click="logout()">logout</a>&nbsp;
-                <button ng-click="show_invite()">Invite a new user...</button>
                 <div class="schedulelist" ng-repeat="(day,o) in days">
-                    <h2>{{weekdays[o.s.getDay()] }}, {{o.s.getDate()}} March</h2>
+                    <h2 style="background-color:white;font-weight: bold;padding-top:5px;padding-bottom:5px">{{weekdays[o.s.getDay()] }}, {{o.s.getDate()}} March</h2>
                     <div class="schedulelist" ng-repeat="(slot,slot_object) in slots">
-                        <h3>{{slot_object.label}} <span ng-if="timemap[o.s.getTime() + slot*3600*1000]">{{timemap[o.s.getTime() + slot*3600*1000].length}} events:</span>
+                       <!-- <h3>{{slot_object.label}} <span ng-if="timemap[o.s.getTime() + slot*3600*1000]">{{timemap[o.s.getTime() + slot*3600*1000].length}} events:</span>
                             <a ng-click="find_timeslot(o.s.getTime() + slot*3600*1000)"
                                ng-if="!timemap[o.s.getTime() + slot*3600*1000]">no events, search in this timeslot</a>
                         </h3>
@@ -357,9 +356,22 @@
                             <li class="event" ng-repeat="event in timemap[o.s.getTime() + slot*3600*1000]">
                                 <a ng-click="find_one_event(event._source.eventid)">{{event._source.title}}</a>
                             </li>
-                        </ul>
+                        </ul> -->
+                        <div class="width:100%">
+                        <div style="width:20%;float:left;padding-top:5px;padding-bottom: 5px;">{{slot_object.label}}</div>
+                            <div style="width:80%;float:left;" >
+                                <div ng-if="!timemap[o.s.getTime() + slot*3600*1000]" style="padding-top:5px;padding-bottom: 5px;">
+                                    <a ng-click="find_timeslot(o.s.getTime() + slot*3600*1000)" style="color:red">No events, search in this timeslot</a>
+                                    </div>
+                                <div ng-if="timemap[o.s.getTime() + slot*3600*1000]" style="padding-top:5px;padding-bottom: 5px;" ng-repeat="event in timemap[o.s.getTime() + slot*3600*1000]">
+                                <a  style="cursor: pointer" ng-click="find_one_event(event._source.eventid)">{{event._source.title}}</a>
+                                    </div>
+                            </div>
+                             <br style="clear: left;" />
+                        </div>
                     </div>
                 </div>
+                <button ng-click="show_invite()">Invite a new user...</button>
 
 
             </div>
@@ -371,7 +383,7 @@
                 </div>
                 <div class="navdiv navtitle">Search / Filter</div>
                 <div class="navdiv button">
-                    <a class="visible-xs navlink navbacklink" ng-click="filtermode=false;searchmode=true">results</a>
+                    <a class="visible-xs navlink navbacklink" ng-click="filtermode=false;searchmode=true">Results</a>
                 </div>
             </div>
 

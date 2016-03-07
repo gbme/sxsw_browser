@@ -133,18 +133,29 @@ div.presenters {
     height:40px;
 }
 .navlink{
-    font-size: 25px;
-    margin-top: 0px;
+    font-size: 20px;
+    margin-top: 10px;
     margin-bottom: 5px;
     text-align: right;
+    cursor: pointer;
 }
 
 
 .navtitle {
     font-size: 25px;
+    font-weight:bold;
+    margin-top:5px;
     text-align:center;
     width:60%;
 
+}
+
+input[type=checkbox] {
+  /* All browsers except webkit*/
+  transform: scale(1.5);
+
+  /* Webkit browsers*/
+  -webkit-transform: scale(1.5);
 }
 
 .navdiv {
