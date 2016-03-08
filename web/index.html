@@ -63,7 +63,7 @@
                 $scope.load_my_events();
 
             }
-            $scope.myevents=false;
+            $scope.myevents = false;
 
             $scope.reset = function (refresh) {
                 while (filter = $scope.indexVM.filters.ejsObjects[0]) {
@@ -232,28 +232,39 @@
             ]
 
 
-        $scope.find_timeslot = function (t) {
-            $scope.reset(false)
-            console.log(t)
-            el = document.getElementById("searchdef")
-            console.log(el)
-            $scope.searchmode = true
-            $scope.indexVM.query = ejs.MatchQuery('utime_start', t)
-            $scope.indexVM.refresh()
-        }
-        $scope.find_one_event = function (eventid) {
-            console.log("find_one_event", eventid)
-            $scope.indexVM.query = ejs.MatchQuery('eventid', eventid)
-            $scope.indexVM.refresh();
-            $scope.searchmode = true;
+            $scope.find_timeslot = function (t) {
+                $scope.reset(false)
+                console.log(t)
+                el = document.getElementById("searchdef")
+                console.log(el)
+                $scope.searchmode = true
+                $scope.indexVM.query = ejs.MatchQuery('utime_start', t)
+                $scope.indexVM.refresh()
+            }
+            $scope.find_one_event = function (eventid) {
+                console.log("find_one_event", eventid)
+                $scope.indexVM.query = ejs.MatchQuery('eventid', eventid)
+                $scope.indexVM.refresh();
+                $scope.searchmode = true;
 
-        }
-        $scope.check_user()
-        $scope.gbme_query = "ejs.MatchQuery('searchdata', 'google')"
-        $scope.filtermode = false;
-        $scope.searchmode = false;
-        })
-        ;
+            }
+            $scope.check_user()
+            $scope.gbme_query = "ejs.MatchQuery('searchdata', 'google')"
+            $scope.filtermode = false;
+            $scope.searchmode = false;
+            $scope.watched = function () {
+                console.log("Test")
+//                $scope.$watchCollection('indexVM.filters.ejsObjects', $scope.watched);
+                if($scope.filtermode) {
+                    $scope.filtermode = false;
+                    $scope.searchmode = true;
+                }
+            }
+            angular.element(document).ready(function () {
+                console.log("loaded")
+                $scope.$watchCollection('indexVM.filters.ejsObjects',  $scope.watched);
+            });
+        });
     </script>
 
 </head>
