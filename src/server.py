@@ -142,13 +142,14 @@ test_db()
 def check_user():
     #check is user is logged in
     auth_cookie = request.get_cookie('AUTH_COOKIE')
-    logger.debug(auth_cookie)
+    logger.debug("auth cookie:"+auth_cookie)
     if auth_cookie and os.path.isfile(authdir+auth_cookie):
         logger.debug("file exists")
         c.execute("SELECT * FROM sxsw_users WHERE uuid=?", (auth_cookie,))
         user = c.fetchone()
         return user
     else:
+        logger.debug("no such login cookie")
         return
 
 
@@ -465,6 +466,7 @@ def rm(fname, times=None):
 
 def set_login_cookie(my_uuid, user_token):
     c.execute("UPDATE sxsw_users SET uuid=?, last_login=date('now') WHERE user_token=?", (my_uuid, user_token))
+    conn.commit()
     touch(authdir + my_uuid)
     #expires = (datetime.today() + timedelta(days=1000)).strftime('%H:%M:%S-%a/%d/%b/%Y')
     expires = (datetime.today() + timedelta(days=1000)).strftime('%a, %d %b %Y %H:%M:%S')

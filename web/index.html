@@ -58,7 +58,7 @@
         var app = angular
                 .module('main', ['elasticui'])
                 .constant('euiHost', elasticurl);
-        app.controller("t2", function ($scope, $http, $timeout) {
+        app.controller("t2", function ($scope, $http, $timeout,$location) {
             $scope.change_user = function (e) {
                 $scope.load_my_events();
 
@@ -71,7 +71,30 @@
                 }
                 if (refresh)$scope.indexVM.refresh()
             }
+$scope.$watch(function(){ return $location.path() }, function(){
+    path = $location.path();
+    if(path == "/results"){
+        $scope.searchmode = true;
+        $scope.filtermode = false
+        return
+    }
+    if(path == "/myevents"){
+        $scope.searchmode = false;
+        $scope.filtermode = false
+        return
+    }
+    if(path == "/filter"){
+        $scope.searchmode = false;
+        $scope.filtermode = true
+        return
+    }
 
+  // reaction
+    console.log($location.path())
+}, true);
+            $scope.$on('$routeUpdate', function (a,b) {
+                console.log("f")
+            });
 
             $scope.check_user = function () {
                 console.log("check");
@@ -108,7 +131,7 @@
 
             $scope.go = function (e) {
                 $scope.change_event_status(e, 'POST')
-                $scope.searchmode = false
+                $scope.to_listmode();
             }
 
             $scope.nogo = function (e) {
@@ -237,7 +260,8 @@
                 console.log(t)
                 el = document.getElementById("searchdef")
                 console.log(el)
-                $scope.searchmode = true
+                $scope.to_searchmode();
+                $location.path("results")
                 $scope.indexVM.query = ejs.MatchQuery('utime_start', t)
                 $scope.indexVM.refresh()
             }
@@ -245,24 +269,43 @@
                 console.log("find_one_event", eventid)
                 $scope.indexVM.query = ejs.MatchQuery('eventid', eventid)
                 $scope.indexVM.refresh();
-                $scope.searchmode = true;
-
+                $location.path("results")
+                $scope.to_searchmode();
             }
             $scope.check_user()
             $scope.gbme_query = "ejs.MatchQuery('searchdata', 'google')"
             $scope.filtermode = false;
+
+            $scope.to_filtermode = function(){
+                console.log("to filtermode")
+                $scope.filtermode=true;
+                $scope.searchmode=false
+                $location.path("filter")
+            }
+
+            $scope.to_listmode = function(){
+                $scope.filtermode=false;
+                $scope.searchmode=false
+                $location.path("myevents")
+            }
+            $scope.to_searchmode = function(){
+                $scope.filtermode=false;
+                $scope.searchmode=true
+                $location.path("results")
+            }
+
+
             $scope.searchmode = false;
             $scope.watched = function () {
                 console.log("Test")
 //                $scope.$watchCollection('indexVM.filters.ejsObjects', $scope.watched);
-                if($scope.filtermode) {
-                    $scope.filtermode = false;
-                    $scope.searchmode = true;
+                if ($scope.filtermode) {
+                    $scope.to_filtermode()
                 }
             }
             angular.element(document).ready(function () {
                 console.log("loaded")
-                $scope.$watchCollection('indexVM.filters.ejsObjects',  $scope.watched);
+                $scope.$watchCollection('indexVM.filters.ejsObjects', $scope.watched);
             });
         });
     </script>
@@ -279,11 +322,11 @@
              class="col-sm-6 col-sm-offset-3 main">
             <div class="navheader">
                 <div class="navdiv">
-                    <a class="visible-xs navlink navbacklink" ng-click="filtermode=false;searchmode=false">< Back</a>
+                    <a class="visible-xs navlink navbacklink" ng-click="to_listmode()">< Back</a>
                 </div>
                 <div class="navdiv navtitle">Results ({{indexVM.results.hits.total}})</div>
                 <div class="navdiv">
-                    <a class="visible-xs  navlink navlinkextra" ng-click="filtermode=true;searchmode=false">Filters</a>
+                    <a class="visible-xs  navlink navlinkextra" ng-click="to_filtermode()">Filters</a>
                 </div>
             </div>
             <ul class="mainlist">
@@ -338,7 +381,7 @@
                 </div>
                 <div class="navdiv navtitle">Schedule</div>
                 <div class="navdiv button right">
-                    <a class="visible-xs  navlink" ng-click="filtermode=true;searchmode=false">Filters</a>
+                    <a class="visible-xs  navlink" ng-click="to_filtermode()">Filters</a>
                 </div>
             </div>
 
@@ -355,20 +398,11 @@
             <div ng-show="confirmation">
                 <h4>{{confirmation}}</h4>
             </div>
-            <div ng-show="!confirmation && user && !invitemode">
+            <div ng-show="myevents && (!confirmation && user && !invitemode)">
                 <div class="schedulelist" ng-repeat="(day,o) in days">
                     <h2>
                         {{weekdays[o.s.getDay()] }}, {{o.s.getDate()}} March</h2>
                     <div ng-repeat="slot_object in slots">
-                        <!-- <h3>{{slot_object.label}} <span ng-if="timemap[o.s.getTime() + slot*3600*1000]">{{timemap[o.s.getTime() + slot*3600*1000].length}} events:</span>
-                             <a ng-click="find_timeslot(o.s.getTime() + slot*3600*1000)"
-                                ng-if="!timemap[o.s.getTime() + slot*3600*1000]">no events, search in this timeslot</a>
-                         </h3>
-                         <ul ng-if="timemap[o.s.getTime() + slot*3600*1000]">
-                             <li class="event" ng-repeat="event in timemap[o.s.getTime() + slot*3600*1000]">
-                                 <a ng-click="find_one_event(event._source.eventid)">{{event._source.title}}</a>
-                             </li>
-                         </ul> -->
                         <div class="width:100%">
                             <div class="myeventslot">{{slot_object.label}}</div>
                             <div style="width:80%;float:left;">
@@ -388,20 +422,26 @@
                         </div>
                     </div>
                 </div>
-                <label for="user">User: {{user}}</label> <a class="actionlink" ng-click="logout()">logout</a>&nbsp;
-                <button ng-click="show_invite()">Invite a new user...</button>
 
+                <div ng-show="user">
+                    <label for="user">User: {{user}}</label> <a class="actionlink" ng-click="logout()">logout</a>&nbsp;
+                    <button ng-click="show_invite()">Invite a new user...</button>
 
+                </div>
+
+            </div>
+            <div ng-show="!myevents && (!confirmation && user && !invitemode)">
+                <center><h3>loading events</h3></center>
             </div>
         </div>
         <div ng-class="{'hidden-xs':!filtermode,'col-xs-12':filtermode}" class="col-sm-3 sidebar">
             <div class="navheader">
                 <div class="navdiv  button">
-                    <a class="visible-xs navlink navbacklink" ng-click="filtermode=false;searchmode=false">< Back</a>
+                    <a class="visible-xs navlink navbacklink" ng-click="to_listmode()">< Back</a>
                 </div>
                 <div class="navdiv navtitle">Search / Filter</div>
                 <div class="navdiv button">
-                    <a class="visible-xs navlink navbacklink" ng-click="filtermode=false;searchmode=true">Results</a>
+                    <a class="visible-xs navlink navbacklink" ng-click="to_listmode()">Results</a>
                 </div>
             </div>
 
