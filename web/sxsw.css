@@ -138,13 +138,18 @@ div.presenters {
     height:40px;
 }
 .navlink{
-    font-size: 20px;
-    margin-top: 10px;
+    font-size: 18px;
+    margin-top: 14px;
     margin-bottom: 5px;
-    text-align: right;
     cursor: pointer;
 }
 
+.left {
+    text-align: left;
+}
+.right {
+    text-align: right;
+}
 
 .navtitle {
     font-size: 25px;

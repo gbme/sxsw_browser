@@ -321,12 +321,12 @@ $scope.$watch(function(){ return $location.path() }, function(){
         <div id="main" ng-class="{'col-xs-12':searchmode,'hidden-xs':!searchmode}"
              class="col-sm-6 col-sm-offset-3 main">
             <div class="navheader">
-                <div class="navdiv">
-                    <a class="visible-xs navlink navbacklink" ng-click="to_listmode()">< Back</a>
+                <div class="navdiv button">
+                    <a class="visible-xs navlink navbacklink left" ng-click="to_listmode()">List</a>
                 </div>
                 <div class="navdiv navtitle">Results ({{indexVM.results.hits.total}})</div>
-                <div class="navdiv">
-                    <a class="visible-xs  navlink navlinkextra" ng-click="to_filtermode()">Filters</a>
+                <div class="navdiv button right">
+                    <a class="visible-xs  navlink navlinkextra right" ng-click="to_filtermode()">Filters</a>
                 </div>
             </div>
             <ul class="mainlist">
@@ -381,7 +381,7 @@ $scope.$watch(function(){ return $location.path() }, function(){
                 </div>
                 <div class="navdiv navtitle">Schedule</div>
                 <div class="navdiv button right">
-                    <a class="visible-xs  navlink" ng-click="to_filtermode()">Filters</a>
+                    <a class="visible-xs  navlink navlinkextra right" ng-click="to_filtermode()">Filters</a>
                 </div>
             </div>
 
@@ -437,15 +437,15 @@ $scope.$watch(function(){ return $location.path() }, function(){
         <div ng-class="{'hidden-xs':!filtermode,'col-xs-12':filtermode}" class="col-sm-3 sidebar">
             <div class="navheader">
                 <div class="navdiv  button">
-                    <a class="visible-xs navlink navbacklink" ng-click="to_listmode()">< Back</a>
+                    <a class="visible-xs navlink navbacklink left" ng-click="to_listmode()">List</a>
                 </div>
                 <div class="navdiv navtitle">Search / Filter</div>
                 <div class="navdiv button">
-                    <a class="visible-xs navlink navbacklink" ng-click="to_listmode()">Results</a>
+                    <a class="visible-xs navlink navbacklink right" ng-click="to_listmode()">Results</a>
                 </div>
             </div>
 
-            <h2>Search:({{indexVM.results.hits.total}})</h2>
+            <h2>Search:({{indexVM.results.hits.total}})</h2><a ng-click="reset()">Reset</a>
             <eui-searchbox field="'searchdata'"></eui-searchbox><!-- ACTION: change to field to search on -->
             <h2>Filters:</h2>
             <h3>Who's attending</h3>
