@@ -337,9 +337,9 @@ $scope.$watch(function(){ return $location.path() }, function(){
                     </h2>
                     <div class="licontainer">
                         <h3><a target="sxswwindow" ng-href="http://schedule.sxsw.com/events/{{doc._source.eventid}}">{{doc._source.title}}→</a>
-                            <button ng-if="user && doc._source.attendees != $parent.user" ng-click="go(doc)">Add
+                            <button ng-if="user && !doc._source.attendees.indexOf($parent.user)" ng-click="go(doc)">Add
                             </button>
-                            <button ng-if="user && doc._source.attendees == $parent.user" ng-click="nogo(doc)">Remove
+                            <button ng-if="user && doc._source.attendees.indexOf($parent.user)" ng-click="nogo(doc)">Remove
                             </button>
                         </h3>
                         <div class="eventcontainer">
@@ -352,7 +352,7 @@ $scope.$watch(function(){ return $location.path() }, function(){
                                     (RSVP)":""}}
                                 </div>
                                 <div class="date_raw"><em>Level: </em>{{doc._source.level}}</div>
-                                <div class="date_raw"><em>Venue: </em>{{doc._source.venue_name}}
+                                <div class="date_raw"><em>Venue: </em><a href="{{doc._source.googlemap.replace('https://','comgooglemaps://')}}">{{doc._source.venue_name}}</a>
                                     {{doc._source.detail_room}}
                                 </div>
                                 <div ng-if="doc._source.attendees" class="attendees"><em>Attending:</em>
@@ -381,7 +381,7 @@ $scope.$watch(function(){ return $location.path() }, function(){
                 </div>
                 <div class="navdiv navtitle">Schedule</div>
                 <div class="navdiv button right">
-                    <a class="visible-xs  navlink navlinkextra right" ng-click="to_filtermode()">Filters</a>
+                    <a class="visible-xs  navlink navlinkextra right" ng-click="to_filtermode()">Search</a>
                 </div>
             </div>
 

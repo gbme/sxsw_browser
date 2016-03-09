@@ -27,6 +27,7 @@
       - requests
       - bottle
       - passlib
+      - slackclient
       
   - file: path=/vagrant/data state=directory
   - file: path=/vagrant/logs state=directory

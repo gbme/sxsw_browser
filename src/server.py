@@ -11,6 +11,13 @@ from email.utils import parseaddr
 from passlib.apps import custom_app_context as pwd_context
 import os
 import sqlite3
+from slackclient import SlackClient
+import secrets
+
+token = secrets.global_config.slackkey      # found at https://api.slack.com/web#authentication
+
+sc = SlackClient(token)
+print sc.api_call("api.test")
 
 
 authdir = "/vagrant/auth/"
