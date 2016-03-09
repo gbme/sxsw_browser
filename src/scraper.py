@@ -53,6 +53,7 @@ def get_event(eventid):
         res["detail_room"] = get_first(event.xpath("//span[@class='detail_room']/text()"))
         res["description"] = get_first(event.xpath("//div[@class='block description']/p/text()"))
         res["venue_name"] = clean_text( event.xpath("//a[@class='detail_venue']/text()")[0])
+        res["googlemap"] = clean_text(event.xpath("//a[text()='View in Google Maps']")[0].get("href"))
         res["format"] = get_first(event.xpath("//div[@class='block' and ./span/text()='Format']/div/a/text()"))
 
         res["event-image"] = get_first(event.xpath("//div[@class='event-image']/img/@src"))
@@ -78,7 +79,7 @@ def get_event(eventid):
 
 
 def main():
-#    subprocess.call("rm /vagrant/data_old/*;mv /vagrant/data/* /vagrant/data_old/", shell=True)    
+    subprocess.call("rm /vagrant/data_old/*;mv /vagrant/data/* /vagrant/data_old/", shell=True)
     for day in [11,12,13,14,15]:
         url = "http://schedule.sxsw.com/?day="+str(day)+"&conference=interactive"
         print url

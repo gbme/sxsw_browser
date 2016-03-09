@@ -63,6 +63,7 @@ def reset():
                         "utime_start": {"type": "date"},
                         "tags": {"type": "string", "analyzer": "keyword"},
                         "detail_room": {"type": "string", "analyzer": "keyword"},
+                        "googlemap": {"type": "string", "analyzer": "keyword"},
                         "level": {"type": "string", "analyzer": "keyword"},
                         "attendees": {"type": "string", "analyzer": "keyword"},
 
