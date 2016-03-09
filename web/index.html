@@ -352,7 +352,7 @@ $scope.$watch(function(){ return $location.path() }, function(){
                                     (RSVP)":""}}
                                 </div>
                                 <div class="date_raw"><em>Level: </em>{{doc._source.level}}</div>
-                                <div class="date_raw"><em>Venue: </em><a href="{{doc._source.googlemap.replace('https://','comgooglemaps://')}}">{{doc._source.venue_name}}</a>
+                                <div class="date_raw"><em>Venue: </em><a href="{{doc._source.googlemap}}">{{doc._source.venue_name}}</a>
                                     {{doc._source.detail_room}}
                                 </div>
                                 <div ng-if="doc._source.attendees" class="attendees"><em>Attending:</em>
