@@ -11,13 +11,12 @@ from email.utils import parseaddr
 from passlib.apps import custom_app_context as pwd_context
 import os
 import sqlite3
-from slackclient import SlackClient
 import secrets
 
-token = secrets.global_config.slackkey      # found at https://api.slack.com/web#authentication
+#token = secrets.global_config.slackkey      # found at https://api.slack.com/web#authentication
 
-sc = SlackClient(token)
-print sc.api_call("api.test")
+#sc = SlackClient(token)
+#print sc.api_call("api.test")
 
 
 authdir = "/vagrant/auth/"
@@ -288,6 +287,7 @@ def send_simple_message(email, token, template, handler,subject):
     template = open("/vagrant/src/templates/" + template).read()
     if template:
         text = template.replace("{{url}}", homepage + "/" + handler + "?email=" + email + "&token=" + token)
+        logger.debug(text)
         return requests.post(
             "https://api.mailgun.net/v2/gbme.nl/messages",
             auth=("api", "key-9fa82127b18561758f4809985b438922"),
@@ -538,8 +538,10 @@ def auth_forgot():
             if res:
                 logger.debug("user exists")
                 reset_token = str(unique_id())
-                send_simple_message(res["email"],reset_token,"mail_resetpw","reset_password.html","SXSW browser login link")
-                #check email
+                try:
+                    send_simple_message(res["email"],reset_token,"mail_resetpw","reset_password.html","SXSW browser login link")
+                except:
+                    logger.error("error in sending mail")
                 c.execute("UPDATE sxsw_users SET reset_token=?,reset_date=date('now') WHERE email=?",(reset_token,res["email"]))
                 conn.commit()
                 c.execute("SELECT * FROM sxsw_users WHERE email=?",(res["email"],))
