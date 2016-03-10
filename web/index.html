@@ -267,10 +267,12 @@ $scope.$watch(function(){ return $location.path() }, function(){
             }
             $scope.find_one_event = function (eventid) {
                 console.log("find_one_event", eventid)
+                $scope.reset();
                 $scope.indexVM.query = ejs.MatchQuery('eventid', eventid)
                 $scope.indexVM.refresh();
                 $location.path("results")
                 $scope.to_searchmode();
+                window.scrollTo(0);
             }
             $scope.check_user()
             $scope.gbme_query = "ejs.MatchQuery('searchdata', 'google')"
@@ -337,9 +339,9 @@ $scope.$watch(function(){ return $location.path() }, function(){
                     </h2>
                     <div class="licontainer">
                         <h3><a target="sxswwindow" ng-href="http://schedule.sxsw.com/events/{{doc._source.eventid}}">{{doc._source.title}}→</a>
-                            <button ng-if="user && !doc._source.attendees.indexOf($parent.user)" ng-click="go(doc)">Add
+                            <button ng-if="user && doc._source.attendees.indexOf($parent.user)==-1" ng-click="go(doc)">Add
                             </button>
-                            <button ng-if="user && doc._source.attendees.indexOf($parent.user)" ng-click="nogo(doc)">Remove
+                            <button ng-if="user && doc._source.attendees.indexOf($parent.user) == 0" ng-click="nogo(doc)">Remove
                             </button>
                         </h3>
                         <div class="eventcontainer">
@@ -404,7 +406,7 @@ $scope.$watch(function(){ return $location.path() }, function(){
                         {{weekdays[o.s.getDay()] }}, {{o.s.getDate()}} March</h2>
                     <div ng-repeat="slot_object in slots">
                         <div class="width:100%">
-                            <div class="myeventslot">{{slot_object.label}}</div>
+                            <div class="myeventslot"><a ng-click="find_timeslot(o.s.getTime() + slot_object.h*3600*1000)">{{slot_object.label}}</a></div>
                             <div style="width:80%;float:left;">
                                 <div class="myeventwrapper"
                                      ng-if="myevents && (!timemap[o.s.getTime() + slot_object.h*3600*1000])">
