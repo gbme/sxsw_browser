@@ -95,7 +95,7 @@ $scope.$watch(function(){ return $location.path() }, function(){
             $scope.$on('$routeUpdate', function (a,b) {
                 console.log("f")
             });
-
+            $scope.offset = new Date().getTimezoneOffset() * -60 * 1000;
             $scope.check_user = function () {
                 console.log("check");
                 $http.get("/sxsw_store/api/auth/check")
@@ -242,11 +242,11 @@ $scope.$watch(function(){ return $location.path() }, function(){
             }
             $scope.weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
             $scope.days = {
-                11: {s: new Date(2016, 2, 11, -6, 0, 0, 0)},
-                12: {s: new Date(2016, 2, 12, -6, 0, 0, 0)},
-                13: {s: new Date(2016, 2, 13, -6, 0, 0, 0)},
-                14: {s: new Date(2016, 2, 14, -6, 0, 0, 0)},
-                15: {s: new Date(2016, 2, 15, -6, 0, 0, 0)},
+                11: {s: new Date(2016, 2, 11, 0, 0, 0, 0)},
+                12: {s: new Date(2016, 2, 12, 0, 0, 0, 0)},
+                13: {s: new Date(2016, 2, 13, 0, 0, 0, 0)},
+                14: {s: new Date(2016, 2, 14, 1, 0, 0, 0)},
+                15: {s: new Date(2016, 2, 15, 1, 0, 0, 0)},
             }
 
             $scope.slots = [
@@ -409,17 +409,17 @@ $scope.$watch(function(){ return $location.path() }, function(){
                         {{weekdays[o.s.getDay()] }}, {{o.s.getDate()}} March</h2>
                     <div ng-repeat="slot_object in slots">
                         <div class="width:100%">
-                            <div class="myeventslot"><a ng-click="find_timeslot(o.s.getTime() + slot_object.h*3600*1000)">{{slot_object.label}}</a></div>
+                            <div class="myeventslot"><a ng-click="find_timeslot(o.s.getTime() + offset + slot_object.h*3600*1000)">{{slot_object.label}}</a></div>
                             <div style="width:80%;float:left;">
                                 <div class="myeventwrapper"
-                                     ng-if="myevents && (!timemap[o.s.getTime() + slot_object.h*3600*1000])">
+                                     ng-if="myevents && (!timemap[o.s.getTime() + offset +  slot_object.h*3600*1000])">
                                     <a class="noevent"
-                                       ng-click="find_timeslot(o.s.getTime() + slot_object.h*3600*1000)">No events,
+                                       ng-click="find_timeslot(o.s.getTime() + offset + slot_object.h*3600*1000)">No events,
                                         search in this timeslot</a>
                                 </div>
-                                <div class="myeventwrapper" ng-if="timemap[o.s.getTime() + slot_object.h*3600*1000]"
+                                <div class="myeventwrapper" ng-if="timemap[o.s.getTime() + offset + slot_object.h*3600*1000]"
                                      style="padding-top:5px;padding-bottom: 5px;"
-                                     ng-repeat="event in timemap[o.s.getTime() + slot_object.h*3600*1000]">
+                                     ng-repeat="event in timemap[o.s.getTime() + offset + slot_object.h*3600*1000]">
                                     <a style="cursor: pointer" ng-click="find_one_event(event._source.eventid)">{{event._source.title}}</a>
                                 </div>
                             </div>
