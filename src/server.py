@@ -430,12 +430,14 @@ def auth_resetpw():
         email= urllib.unquote(data.get("userid" )).decode('utf8')
         logger.debug(email)
         logger.debug(token)
-        c.execute("SELECT user_token FROM sxsw_users WHERE reset_token=? AND email=? ",(token,email))
-        logger.debug("SELECT user_token FROM sxsw_users WHERE reset_token=%s AND email=%s AND reset_date > date('now','10 minutes')",(token,email))
+        c.execute("SELECT user_token, uuid FROM sxsw_users WHERE reset_token=? AND email=? ",(token,email))
+        logger.debug("SELECT user_token, uuid FROM sxsw_users WHERE reset_token=%s AND email=%s AND reset_date > date('now','10 minutes')",(token,email))
         res = c.fetchone()
         logger.debug(res)
-        if res:
+        if res:  
             my_uuid = unique_id()
+            if res["uuid"]:
+                 my_uuid = res["uuid"]
             logger.debug("uuid:"+my_uuid)
             c.execute("UPDATE sxsw_users SET reset_token=NULL,reset_date=NULL,active=1 WHERE reset_token=? AND email=?",(token,email))
             conn.commit()
@@ -537,7 +539,10 @@ def auth_forgot():
             logger.debug(res)
             if res:
                 logger.debug("user exists")
+#                reset_token = res["reset_token"]
                 reset_token = str(unique_id())
+
+                
                 try:
                     send_simple_message(res["email"],reset_token,"mail_resetpw","reset_password.html","SXSW browser login link")
                 except:

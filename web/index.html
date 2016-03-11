@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <title>SXSW Panel Browser</title>
@@ -254,7 +254,9 @@ $scope.$watch(function(){ return $location.path() }, function(){
                 {"h": 11, "label": "11:00 AM"},
                 {"h": 12.5, "label": "12:30 PM"},
                 {"h": 14, "label": "14:00 PM"},
-                {"h": 15.5, "label": "15:30 PM"}
+                {"h": 15.5, "label": "15:30 PM"},
+                {"h": 15.75, "label": "15:45 PM"},
+                {"h": 17 , "label": "17:00 PM"}
             ]
 
 
@@ -341,7 +343,7 @@ $scope.$watch(function(){ return $location.path() }, function(){
                             target="sxswwindow" ng-href="">{{doc._source.date_raw}} {{doc._source.time_raw}}</a>
                     </h2>
                     <div class="licontainer">
-                        <h3><a target="sxswwindow" ng-href="http://schedule.sxsw.com/events/{{doc._source.eventid}}">{{doc._source.title}}→</a>
+                        <h3><a target="sxswwindow" ng-href="http://schedule.sxsw.com/events/{{doc._source.eventid}}">{{doc._source.title}}</a>
                             <button ng-if="user && doc._source.attendees.indexOf($parent.user)==-1" ng-click="go(doc)">Add
                             </button>
                             <button ng-if="user && doc._source.attendees.indexOf($parent.user) == 0" ng-click="nogo(doc)">Remove
@@ -450,7 +452,7 @@ $scope.$watch(function(){ return $location.path() }, function(){
                 </div>
             </div>
 
-            <h2>Search:({{indexVM.results.hits.total}})</h2><a ng-click="reset()">Reset</a>
+            <h2>Search:({{indexVM.results.hits.total}})</h2><a ng-click="reset(true)">Reset</a>
             <eui-searchbox field="'searchdata'"></eui-searchbox><!-- ACTION: change to field to search on -->
             <h2>Filters:</h2>
             <h3>Who's attending</h3>
