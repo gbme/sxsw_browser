@@ -62,7 +62,7 @@
             $scope.myevents = false;
             $scope.change_user = function (e) {
                 console.log("change user")
-                setTimeout($scope.load_my_events,1000);
+                setTimeout($scope.load_my_events,100);
 
             }
 
@@ -124,6 +124,8 @@ $scope.$watch(function(){ return $location.path() }, function(){
 
                             $scope.myevents = data;
                             console.log($scope.timemap)
+                            $scope.to_filtermode();
+                            $scope.to_listmode();
                         }).error(function (data, status, headers, config) {
 
                     // log error
@@ -449,7 +451,7 @@ $scope.$watch(function(){ return $location.path() }, function(){
                 </div>
                 <div class="navdiv navtitle">Search / Filter</div>
                 <div class="navdiv button">
-                    <a class="visible-xs navlink navbacklink right" ng-click="to_listmode()">Results</a>
+                    <a class="visible-xs navlink navbacklink right" ng-click="to_searchmode()">Results</a>
                 </div>
             </div>
 
