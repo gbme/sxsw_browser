@@ -124,8 +124,7 @@ $scope.$watch(function(){ return $location.path() }, function(){
 
                             $scope.myevents = data;
                             console.log($scope.timemap)
-                            $scope.to_filtermode();
-                            setTimeout($scope.to_listmode(),100);
+                            document.getElementById("side").focus();
                         }).error(function (data, status, headers, config) {
 
                     // log error
@@ -384,7 +383,7 @@ $scope.$watch(function(){ return $location.path() }, function(){
             </ul>
             <eui-simple-paging></eui-simple-paging>
         </div>
-        <div ng-class="{'hidden-xs':searchmode || filtermode,'col-xs-12':!searchmode}"
+        <div id="side" ng-class="{'hidden-xs':searchmode || filtermode,'col-xs-12':!searchmode}"
              class="col-sm-3 col-sm-offset-9 sidebar">
             <div class="navheader">
                 <div class="navdiv button left">&nbsp;
