@@ -125,7 +125,7 @@ $scope.$watch(function(){ return $location.path() }, function(){
                             $scope.myevents = data;
                             console.log($scope.timemap)
                             $scope.to_filtermode();
-                            $scope.to_listmode();
+                            setTimeout($scope.to_listmode(),100);
                         }).error(function (data, status, headers, config) {
 
                     // log error
