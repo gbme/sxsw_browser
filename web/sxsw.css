@@ -48,7 +48,7 @@ ul {
     padding: 10px;
     padding-top:0px;
     overflow-x: hidden;
-    overflow-y: auto;
+    overflow-y: scroll;
     background-color: #f5f5f5;
     -webkit-overflow-scrolling: touch; //adding this line will enable inertial scrolling
 
