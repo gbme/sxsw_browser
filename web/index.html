@@ -407,7 +407,7 @@ $scope.$watch(function(){ return $location.path() }, function(){
             <div ng-show="confirmation">
                 <h4>{{confirmation}}</h4>
             </div>
-            <div ng-show="myevents!=false && (!confirmation && user && !invitemode)">
+            <div autoscroll="true" ng-show="myevents!=false && (!confirmation && user && !invitemode)">
                 <div class="schedulelist" ng-repeat="(day,o) in days">
                     <h2>
                         {{weekdays[o.s.getDay()] }}, {{o.s.getDate()}} March</h2>
