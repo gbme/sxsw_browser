@@ -303,7 +303,10 @@ $scope.$watch(function(){ return $location.path() }, function(){
                 $location.path("results")
             }
 
+            $scope.to_test = function(){
+                document.getElementById("test").style("overflow-y:scroll")
 
+            }
             $scope.searchmode = false;
             $scope.watched = function () {
                 console.log("Test")
@@ -380,13 +383,14 @@ $scope.$watch(function(){ return $location.path() }, function(){
             </ul>
             <eui-simple-paging></eui-simple-paging>
         </div>
-        <div autoscroll="true" autoscroll="true"id="side" ng-class="{'hidden-xs':searchmode || filtermode,'col-xs-12':!searchmode}"
+        <div autoscroll="true" autoscroll="true" id="side" ng-class="{'hidden-xs':searchmode || filtermode,'col-xs-12':!searchmode}"
              class="col-sm-3 col-sm-offset-9 sidebar">
             <div class="navheader">
                 <div class="navdiv button left">&nbsp;
                 </div>
                 <div class="navdiv navtitle">Schedule</div>
                 <div class="navdiv button right">
+                    <a class="visible-xs  navlink navlinkextra right" ng-click="to_test()">Test</a>
                     <a class="visible-xs  navlink navlinkextra right" ng-click="to_filtermode()">Search</a>
                 </div>
             </div>
