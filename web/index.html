@@ -305,6 +305,8 @@ $scope.$watch(function(){ return $location.path() }, function(){
 
             $scope.to_test = function(){
                 document.getElementById("test").style("overflow-y:scroll")
+                $scope.to_filtermode();
+                $scope.to_listmode();
 
             }
             $scope.searchmode = false;
